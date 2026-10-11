@@ -27,6 +27,13 @@ jobs:
         run: npm run build
       - name: Verificar saída esperada
         run: test -f dist/index.html
+      - name: Guardar prévia HTML privada (7 dias; sem deploy)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-home-p01-previa
+          path: dist/
+          retention-days: 7
+          if-no-files-found: error
 
   studio:
     name: Sanity — tipos e build estático do painel
