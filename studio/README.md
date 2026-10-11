@@ -1,27 +1,33 @@
-# Lavender Cerâmicas — painel da proprietária (estrutura inicial)
+# Lavender Cerâmicas — Studio da cliente (não publicado)
 
-Este diretório prepara um **Sanity Studio independente**. O projeto Sanity real **ainda não foi criado ou conectado**, o build do Studio **ainda não foi validado**, e nenhum dado real foi importado.
+A conta Sanity foi criada com Google `lavanderceramicas@gmail.com`. Projeto real **Lavender Cerâmicas**: `t4nkzeaq`, dataset `production`. Organização: `ow010fg90`.
+Projeto no Sanity: https://www.sanity.io/organizations/ow010fg90/project/t4nkzeaq
 
-## Por que separado do site?
-A cliente poderá cadastrar produtos, fotos e preços sem editar código. O site Astro permanecerá separado do painel e só receberá conteúdo aprovado após integração e testes.
+## Custo
+No cadastro em 11/10/2026, a plataforma iniciou um **Growth Trial gratuito por 30 dias**, sem cartão. A página do plano informa downgrade automático ao Free após o teste. Revisar após o prazo: https://www.sanity.io/organizations/ow010fg90/project/t4nkzeaq/plan. Não contratar Growth nem introduzir custos sem autorização da proprietária.
 
-## Para ativar quando autorizado
-1. Criar projeto Sanity **na conta da Marina** (ou registrar formalmente a transferência), revisar termos, cotas, localização e permissões.
-2. Definir um dataset apropriado à operação. Plano Free pode oferecer apenas datasets públicos: não publicar documentos privados, dados de pedidos ou dados comerciais ainda não aprovados.
-3. Copiar `.env.example` para `.env` nesta pasta e informar `SANITY_STUDIO_PROJECT_ID` e `SANITY_STUDIO_DATASET`.
-4. Rodar `npm install` e `npm run dev` dentro de `studio/` com internet habilitada.
-5. Revisar os campos com Marina e testar o fluxo de rascunho/publicação. Não executar importação de dados comerciais fictícios.
-6. Hospedar o Studio pelo serviço oficial quando a titularidade estiver estabelecida; não publicar o painel sem autenticação.
+## Execução técnica
+O esquema do Studio fica em `schemaTypes/`; sua validação de TypeScript roda no GitHub Actions. O Project ID é identificador público, não credencial.
 
-## Fluxo editorial recomendado
-- Cadastrar categorias e coleções com nomes aprovados.
-- Criar produto como **rascunho**, carregar imagens próprias e preencher descrições.
-- Confirmar disponibilidade, preços e direitos de uso antes de clicar em Publicar.
-- Validar o produto publicado no site por um processo de preview/rebuild a definir.
-- Evitar depender da Math Brands para atualizações rotineiras.
+```bash
+cd studio
+cp .env.example .env
+npm install
+npm run check
+npm run dev
+```
 
-**Atenção:** datasets públicos disponibilizam documentos publicados por API. Portanto, deixar `priceMode: unconfirmed` em um documento publicado não é proteção de sigilo. Produtos pendentes de aprovação devem permanecer em rascunho.
+Para preparar a versão estática do painel: `npm run build`. **Build não significa publicação nem cadastro de domínio.** O painel ainda não foi hospedado no serviço Sanity, nem testado pelo navegador da Marina.
 
-**Personalização mobile:** bloqueada por CON-02 na V3. Este schema não autoriza interface ou pedido de personalização.
+## Edição para a Marina
+- Criar categorias e coleções antes de atribuir produtos.
+- Criar produto em **rascunho**, carregar fotos de autoria/direitos confirmados, nome, descrição, preço (se confirmado), categoria e imagem com descrição acessível.
+- Campo `Aprovação para aparecer no site`: começa como **Pendente**. Marcar **Aprovado** somente quando confirmado.
+- Conferir preview, salvar e publicar no Sanity somente conteúdo apropriado para um dataset público.
+- Um produto ainda não entra no site até o front-end ser ativado e passar por homologação. Atualização automática ainda NÃO configurada.
 
-**IA/ChatGPT:** não integrada. A avaliação futura deve exigir autenticação, confirmação humana e aprovação da cliente; plano premium do ChatGPT não equivale a créditos automáticos de API.
+**Segurança:** datasets públicos expõem documentos *publicados* diretamente na API, inclusive os sinalizados como pendentes no campo de status. Manter não aprovados como rascunho e jamais publicar dados de pedidos ou informações pessoais.
+
+**Limites V3:** personalização mobile CON-02, listas CON-03/04, comercial e operações de pedidos seguem bloqueados.
+
+**IA/ChatGPT:** recurso futuro opcional, sem API nem custos ativados.

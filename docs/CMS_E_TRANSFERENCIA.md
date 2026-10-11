@@ -1,35 +1,31 @@
 # Operação independente e transferência de titularidade
 
-## Princípios
-- A cliente deverá ser titular das contas de hospedagem, CMS e domínio quando o site entrar em produção.
-- O código pode permanecer inicialmente na Math Brands, com transferência integral e documentação na entrega.
-- Evitar dependências de conta pessoal, cartão de crédito do desenvolvedor, arquivos locais ou manutenção recorrente obrigatória.
-- O painel da cliente deve permitir editar produto, preço, disponibilidade, fotografias, categorias, ordenação e textos permitidos, sem alterar layout ou estrutura do site.
+## Titularidade
+- Conta Google de operação criada pela cliente: `lavanderceramicas@gmail.com`; credenciais e meios de recuperação são exclusivos da Marina.
+- Projeto Sanity criado pela conta autorizada em 11/10/2026: `t4nkzeaq`, organização `ow010fg90`, dataset `production`.
+- Sanity começou em Growth Trial gratuito (30 dias) sem cobrança nem cartão e informou downgrade automático para o Free. Não adicionar pagamento; confirmar após o término do trial.
+- Repositório `mathbrandscontato-wq/Lavander-Ceramica` é privado, sob Math Brands temporariamente. A entrega deverá transferir a titularidade ou o conteúdo completo, com aceite.
+- Hospedagem, domínio e vídeo ainda não escolhidos. Criar cada serviço em conta da proprietária, com acesso de colaboração à equipe técnica.
 
-## CMS (proposta, não integrado)
-- Avaliar Sanity Free com painel em português e formulários reduzidos, não presumir cotas permanentes.
-- Edição: rascunho → validação de campos → prévia → publicação.
-- Publicação pode disparar rebuild autenticado do site estático; nunca colocar token no front-end.
-- IA e ChatGPT são melhoria futura, não dependência do lançamento. ChatGPT Plus não é sinônimo de API gratuita ou permissão de escrita automática.
+## Administração
+O painel Sanity foi estruturado em português com `Produtos`, `Categorias` e `Coleções`. Permite alterar conteúdo sem editar código, mas **Studio ainda não foi publicado nem testado pela Marina**.
 
-## Checklist de transferência
-1. Criar contas e confirmar titularidade da cliente.
-2. Transferir o repositório, ou formalizar cópia e acesso conforme contrato.
-3. Dar à cliente permissões administrativas no CMS, hospedagem e domínio.
-4. Revogar acessos temporários da Math Brands após o aceite.
-5. Testar publicação de produto, restauração/rollback e recuperação de conta.
-6. Entregar manual operacional, documentação de custos e renovação de domínio.
-7. Registrar aceite e responsáveis por suporte futuro.
+Fluxo aprovado apenas tecnicamente:
+1. Criar rascunho de produto.
+2. Preencher informações confirmadas e fotografias autorizadas.
+3. Marcar publicação editorial `approved` somente com registro de aprovação; publicar no Sanity apenas material que pode ficar público no dataset.
+4. Prévia e avaliação humana; build do site a ativar somente após homologação.
+5. Verificar resultado e rollback; a automação de rebuild é pendente.
 
-## Preparação técnica implementada
+**Aviso de privacidade:** não colocar pedidos, contatos ou dados pessoais no dataset público. Não usar `publicationStatus: pending` como se fosse controle de acesso; documentos já publicados podem ser acessíveis pela API.
 
-A pasta `studio/` contém schemas de produto, categoria e coleção, em português. Não há login, conta Sanity, importação de produtos ou deploy configurados. Os testes de contrato de catálogo estão em `tests/` e a integração com o site Astro virá após a validação de dados e conta da proprietária.
+**IA/ChatGPT:** conexão futura opcional; assinatura ChatGPT Plus não inclui acesso gratuito à API nem acesso automático aos dados do CMS.
 
-## Conta operacional da cliente — decisão de cadastro
-
-- Endereço solicitado: `lavanderceramicas@gmail.com` (**candidato; existência e disponibilidade ainda não confirmadas**).
-- Nome da marca na interface pública: **Lavender Cerâmicas**. O endereço usa a grafia informada pelo contratante e não deve ser alterado silenciosamente.
-- Responsável pela titularidade e recuperação: **Marina**. A Math Brands só poderá receber convite de colaborador nos serviços, sem utilizar recuperação por telefone/e-mail da agência.
-- Cadastro Google deve ser concluído pela titular com senha própria, verificação solicitada e meios de recuperação controlados por ela; nenhuma senha, código de verificação ou telefone pessoal é registrado no GitHub.
-- Após a titular confirmar que criou o e-mail, abrir o projeto Sanity na conta dela, adicionar o desenvolvedor com permissões mínimas e registrar owner/serviço/custos no documento de handover.
-- **Status em 11/10/2026: PENDENTE DE CADASTRO pela titular.** Não tratar o e-mail como existente até confirmação.
+## Checklists de transferência
+1. Confirmar domínio/Cloudflare/Sanity registrados pela Marina.
+2. Transferir repositório ou estabelecer cópia integral com direito de manutenção pela proprietária.
+3. Confirmar acessos administrativos no CMS/hospedagem/domínio e revogar privilégios temporários da agência.
+4. Testar publicar um produto, corrigir, despublicar e recuperar backup.
+5. Entregar manual simples com telas, custos, senhas sob posse exclusiva da Marina, fornecedores e links de suporte.
+6. Revisar limite do plano gratuito, responsáveis e eventual despesa futura antes da publicação.
+7. Formalizar aceite visual e operacional.

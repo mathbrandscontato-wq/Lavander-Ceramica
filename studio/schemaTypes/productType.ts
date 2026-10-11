@@ -16,6 +16,18 @@ export const productType = defineType({
     defineField({name:'name',title:'Nome do produto',type:'string',group:'principal',validation:Rule=>Rule.required()}),
     defineField({name:'slug',title:'Endereço do produto',type:'slug',group:'principal',
       options:{source:'name',maxLength:96},validation:Rule=>Rule.required()}),
+    defineField({name:'publicationStatus',title:'Aprovação para aparecer no site',type:'string',group:'principal',
+      description:'Comece como Pendente. Somente mudar para Aprovado após conferir fotos, direitos de uso, texto, categoria e preço. O botão Publicar do Sanity é diferente desta aprovação.',
+      options:{layout:'radio',list:[
+        {title:'Pendente (não exibir)',value:'pending'},
+        {title:'Aprovado para o catálogo',value:'approved'},
+      ]},initialValue:'pending',validation:Rule=>Rule.required()}),
+    defineField({name:'approvalSource',title:'Referência da aprovação',type:'string',group:'principal',
+      description:'Exemplo: conferido pela Marina em DD/MM/AAAA. Não incluir dados pessoais sensíveis.',
+      validation:Rule=>Rule.custom((value,ctx)=>{
+        if(ctx.document?.publicationStatus!=='approved') return true;
+        return typeof value==='string' && value.trim().length>0 || 'Informe a confirmação da aprovação antes de exibir no site.';
+      })}),
     defineField({name:'images',title:'Fotografias da peça',type:'array',group:'principal',
       of:[{type:'image',options:{hotspot:true},fields:[
         defineField({name:'alt',title:'Descrição da fotografia (acessibilidade)',type:'string',validation:Rule=>Rule.required()}),
@@ -39,7 +51,7 @@ export const productType = defineType({
       hidden:({document})=>document?.priceMode!=='fixed',
       validation:Rule=>Rule.custom((value,context)=>{
         if(context.document?.priceMode!=='fixed') return true;
-        return typeof value==='number'&&Number.isFinite(value)&&value>0||'Informe um preço real positivo.';
+        return (typeof value==='number'&&Number.isFinite(value)&&value>0) || 'Informe um preço real positivo.';
       })}),
     defineField({name:'stockStatus',title:'Disponibilidade confirmada?',type:'string',group:'comercial',
       options:{list:[
@@ -56,7 +68,7 @@ export const productType = defineType({
       of:[{type:'reference',to:[{type:'product'}],options:{filter:'personalizable == true'}}]}),
   ],
   preview:{
-    select:{title:'name',subtitle:'productId',media:'images.0'},
-    prepare:({title,subtitle,media})=>({title:title||'Sem nome',subtitle:subtitle||'Código pendente',media}),
+    select:{title:'name',subtitle:'publicationStatus',media:'images.0'},
+    prepare:({title,subtitle,media})=>({title:title||'Sem nome',subtitle:subtitle==='approved'?'Aprovado para catálogo':'Pendente',media}),
   },
 });

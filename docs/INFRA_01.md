@@ -1,24 +1,29 @@
-# INFRA-01 — avaliação inicial, não ativação
+# INFRA-01 — estado de infraestrutura
 
-## Decisões verificadas em documentação oficial
-- **Cloudflare Pages** suporta sites Astro estáticos: build `npm run build`, saída `dist`. A modalidade Free possui limites, inclusive limite de 25 MiB por asset; não hospedar vídeo longo no repositório sem análise.
-- **Sanity Free** possui Studio hospedado e cotas gratuitas; o dataset Free pode ser público, exigindo disciplina de rascunhos e privacidade.
-- **GitHub** está inicialmente sob Math Brands e deverá ser transferido à cliente, com checklists de acesso, titularidade e rollback.
+## Sanity: CRIADO, código em integração e painel não publicado
+- Conta da titular: `lavanderceramicas@gmail.com`.
+- Projeto: **Lavender Cerâmicas**, ID público `t4nkzeaq`, organização `ow010fg90`, dataset `production`.
+- URL: https://www.sanity.io/organizations/ow010fg90/project/t4nkzeaq
+- Em 11/10/2026: **Growth Trial 30 dias, US$0 e sem cartão**, downgrade automático para Free declarado na página do plano. Confirmar na data de término e monitorar quotas.
+- Nenhum dado comercial real, pedido, senha, token ou integração paga inserido; Studio próprio em código, ainda não implantado.
+- Dataset Free público: documentos publicados podem ser lidos via API; draft e aprovação editorial devem ser usados adequadamente.
 
-## Ainda pendente
-- Conta Cloudflare da titular e custos/limites reais da conta; nenhuma implantação foi criada.
-- Conta Sanity de titularidade da cliente e avaliação do painel por ela.
-- Domínio, titularidade, política de renovação e documentação financeira.
-- Hospedagem ou distribuição do vídeo artesanal; poster otimizado.
-- Processo de deploy seguro; nenhum deploy automático ligado neste momento.
-- Testar publicação de um produto real aprovado, em ambiente protegido, antes de publicar.
-- Gerar e versionar package-lock.json após primeira instalação com internet.
-- Autorizar adaptação visual a partir de tokens/arquivos originais da Lavender.
+## Cloudflare Pages: somente CANDIDATA
+- Astro estático suporta Cloudflare Pages com build `npm run build` e saída `dist`.
+- Criar conta de propriedade da cliente e validar plano/cotas, build, assets hero/video, domínio, DNS, acesso, logs, privacidade e custos antes de conectar.
+- Nenhum deploy automático nem domínio configurado.
 
-## Fontes técnicas consultadas em 11/10/2026
-- https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/
-- https://developers.cloudflare.com/pages/platform/limits/
-- https://www.sanity.io/pricing
-- https://www.sanity.io/docs/studio/project-structure
+## GitHub: FUNDAÇÃO PREPARADA
+- Repositório `mathbrandscontato-wq/Lavander-Ceramica` **privado**, sob controle inicial da Math Brands.
+- PR #1 em rascunho. Transferência integral à cliente na entrega; nunca depender de senhas ou conta da agência.
+- CI testa Astro e schemas Sanity, e pode construir Studio sem publicá-lo.
+- **PENDENTE:** lockfiles versionados para builds reprodutíveis e política de branches antes de produção.
 
-**Status:** arquitetura **candidata e parcialmente validada por documentação**, não aprovada para publicação. Nenhuma credencial foi configurada.
+## Outros gates
+- Definição de hospedagem de vídeo real, poster e direitos de mídia.
+- Logos, fontes, cores, ilustrações e medidas M01; aprovação da direção criativa.
+- Conciliação mobile e produtos CON-01/02/03/04.
+- Validar catálogo por amostra real, sem copiar valores de mockups.
+- Autorizar explicitamente publicação, checkout/WhatsApp e alterações comerciais após V3.
+
+Referências: https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/ | https://www.sanity.io/pricing | https://www.sanity.io/docs/growth-plan-trial

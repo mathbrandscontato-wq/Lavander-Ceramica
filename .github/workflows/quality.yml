@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Instalar dependências do Astro (até versionar lockfile)
+      - name: Instalar dependências do Astro (lockfile ainda pendente)
         run: npm install --no-audit --no-fund
       - name: Testar contratos de catálogo
         run: npm test
@@ -29,9 +29,13 @@ jobs:
         run: test -f dist/index.html
 
   studio:
-    name: Sanity — compilar contratos de conteúdo
+    name: Sanity — tipos e build estático do painel
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    env:
+      SANITY_STUDIO_PROJECT_ID: t4nkzeaq
+      SANITY_STUDIO_DATASET: production
+      SANITY_TELEMETRY_DISABLED: '1'
     steps:
       - name: Obter código
         uses: actions/checkout@v4
@@ -39,7 +43,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Instalar dependências do Studio
+      - name: Instalar dependências do Studio (lockfile ainda pendente)
         run: npm --prefix studio install --no-audit --no-fund
-      - name: Verificar tipos dos schemas, sem acessar CMS
+      - name: Verificar tipos dos schemas
         run: npm --prefix studio run check
+      - name: Construir Studio sem publicar
+        run: npm --prefix studio run build
