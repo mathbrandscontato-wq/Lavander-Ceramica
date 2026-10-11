@@ -1,0 +1,18 @@
+---
+/** Componente preparado para o catálogo. Não usar com produto fictício em produção. */
+interface Props {
+  name: string;
+  href: string;
+  imageSrc: string;
+  imageAlt: string;
+  priceLabel?: string;
+}
+const { name, href, imageSrc, imageAlt, priceLabel } = Astro.props;
+---
+<article class="product-card">
+  <a href={href} class="product-card__link">
+    <img src={imageSrc} alt={imageAlt} loading="lazy" width="640" height="800" />
+    <h2>{name}</h2>
+  </a>
+  {priceLabel && <p>{priceLabel}</p>}
+</article>

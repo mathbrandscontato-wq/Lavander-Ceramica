@@ -1,0 +1,17 @@
+:root{color-scheme:light;--space-unit:1rem;--page-max:72rem;--ink:#222;--surface:#fff}
+*{box-sizing:border-box}
+html{scroll-behavior:auto}
+body{margin:0;color:var(--ink);background:var(--surface);font-family:system-ui,sans-serif;line-height:1.5}
+img,video{max-width:100%;height:auto}
+button,input,textarea,select{font:inherit}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+.container{width:min(calc(100% - 2rem),var(--page-max));margin-inline:auto}
+.skip-link{position:absolute;transform:translateY(-200%);background:#fff;padding:.75rem;z-index:100}
+.skip-link:focus{transform:translateY(0)}
+.site-header,.site-footer{padding:1.5rem 0;border-block:1px solid #ddd}
+.foundation{padding-block:clamp(2rem,8vw,7rem)}
+.foundation h1{max-width:23ch;line-height:1.1}
+.eyebrow{font-size:.85rem}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important}}
+/* ATENÇÃO: estilos técnicos não representam tokens finais da marca; protocolo M01 obrigatório. */

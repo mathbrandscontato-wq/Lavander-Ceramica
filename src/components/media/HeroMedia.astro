@@ -1,0 +1,13 @@
+---
+/** Somente estrutura; conteúdo, crop e autoplay dependem de assets/aceite VIS-01. */
+interface Props {poster:string; src?:string; alt?:string}
+const {poster,src,alt='Processo artesanal de cerâmica'}=Astro.props;
+---
+<div class="hero-media">
+  {src
+    ? <video controls playsinline preload="none" poster={poster} aria-label={alt}>
+        <source src={src} />
+        Seu navegador não suporta vídeo. 
+      </video>
+    : <img src={poster} alt={alt} width="1440" height="900" loading="eager" />}
+</div>
