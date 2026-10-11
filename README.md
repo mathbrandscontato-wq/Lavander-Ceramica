@@ -24,3 +24,11 @@ Este front-end contém **somente uma página técnica provisória**, não o layo
 O Studio Sanity está em `studio/` com schemas em português; ele exige uma conta Sanity e um Project ID de titularidade da cliente. A instalação e o type-check serão avaliados separadamente. Consulte `studio/README.md`.
 
 **Status:** repositório privado, branch `chore/initial-foundation`, PR em rascunho. Ainda não há Cloudflare, domínio, CMS conectado ou publicação comercial. Gerar e versionar lockfiles antes de implantação permanente.
+
+## Controle operacional temporário
+
+Não contatar ou notificar a proprietária até **13/10/2026, inclusive**. Pendências com a Marina serão retomadas a partir de **14/10/2026** mediante planejamento com a Math Brands.
+
+A pasta `studio/` contém os formulários de catálogo, a área "Comece aqui", o singleton "Textos e contatos" e uma guarda de publicação. O Studio está **somente preparado em código**: nem a URL de administração nem o site público foram implantados.
+
+O catálogo do Astro recebe helpers de ordenação/filtros estruturados, mas **nenhum grid definitivo** foi construído enquanto os conflitos de pranchas permanecem abertos.

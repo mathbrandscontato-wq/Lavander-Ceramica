@@ -17,6 +17,8 @@ export const PUBLIC_PRODUCTS_QUERY = `*[
   priceMode,
   priceAmount,
   "currency": "BRL",
+  tags,
+  "collectionIds": collections[]->slug.current,
   stockStatus,
   personalizable,
   "allowedModelIds": allowedModels[]->productId,

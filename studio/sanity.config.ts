@@ -1,6 +1,7 @@
 import {defineConfig} from 'sanity';
 import {structureTool} from 'sanity/structure';
 import {schemaTypes} from './schemaTypes';
+import {ptBRLocale} from '@sanity/locale-pt-br';
 import {GettingStartedTool} from './tools/GettingStartedTool';
 import {guardPublishAction} from './actions/guardPublishAction';
 
@@ -15,6 +16,7 @@ export default defineConfig({
   projectId,
   dataset,
   plugins: [
+    ptBRLocale(),
     structureTool({
       title: 'Gerenciar conteúdo',
       structure: (S) =>
