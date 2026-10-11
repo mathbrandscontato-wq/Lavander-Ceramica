@@ -24,3 +24,12 @@
 ## Preparação técnica implementada
 
 A pasta `studio/` contém schemas de produto, categoria e coleção, em português. Não há login, conta Sanity, importação de produtos ou deploy configurados. Os testes de contrato de catálogo estão em `tests/` e a integração com o site Astro virá após a validação de dados e conta da proprietária.
+
+## Conta operacional da cliente — decisão de cadastro
+
+- Endereço solicitado: `lavanderceramicas@gmail.com` (**candidato; existência e disponibilidade ainda não confirmadas**).
+- Nome da marca na interface pública: **Lavender Cerâmicas**. O endereço usa a grafia informada pelo contratante e não deve ser alterado silenciosamente.
+- Responsável pela titularidade e recuperação: **Marina**. A Math Brands só poderá receber convite de colaborador nos serviços, sem utilizar recuperação por telefone/e-mail da agência.
+- Cadastro Google deve ser concluído pela titular com senha própria, verificação solicitada e meios de recuperação controlados por ela; nenhuma senha, código de verificação ou telefone pessoal é registrado no GitHub.
+- Após a titular confirmar que criou o e-mail, abrir o projeto Sanity na conta dela, adicionar o desenvolvedor com permissões mínimas e registrar owner/serviço/custos no documento de handover.
+- **Status em 11/10/2026: PENDENTE DE CADASTRO pela titular.** Não tratar o e-mail como existente até confirmação.
