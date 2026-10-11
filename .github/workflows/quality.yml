@@ -1,11 +1,15 @@
 name: Validar fundação técnica
+
 on:
   pull_request:
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
-  validate:
+  astro:
+    name: Astro — contrato, teste e build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -15,7 +19,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Instalar dependências do Astro (temporário, até gerar lockfile)
+      - name: Instalar dependências do Astro (até versionar lockfile)
         run: npm install --no-audit --no-fund
       - name: Testar contratos de catálogo
         run: npm test
@@ -23,3 +27,19 @@ jobs:
         run: npm run build
       - name: Verificar saída esperada
         run: test -f dist/index.html
+
+  studio:
+    name: Sanity — compilar contratos de conteúdo
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+      - name: Preparar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependências do Studio
+        run: npm --prefix studio install --no-audit --no-fund
+      - name: Verificar tipos dos schemas, sem acessar CMS
+        run: npm --prefix studio run check
