@@ -27,6 +27,20 @@ jobs:
         run: npm run build
       - name: Verificar saída esperada
         run: test -f dist/index.html
+      - name: Gerar capturas de homologação privadas (Chromium em runner)
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 >/tmp/lavender-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4321/ >/dev/null && break || sleep 1; done
+          CHROME=$(command -v google-chrome || command -v chromium)
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,2800 --screenshot=p01-desktop-1440.png --virtual-time-budget=2500 http://127.0.0.1:4321/
+          test -s p01-desktop-1440.png
+      - name: Guardar captura A1 (7 dias)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-p01-captura-1440
+          path: p01-desktop-1440.png
+          retention-days: 7
+          if-no-files-found: error
       - name: Guardar prévia HTML privada (7 dias; sem deploy)
         uses: actions/upload-artifact@v4
         with:
