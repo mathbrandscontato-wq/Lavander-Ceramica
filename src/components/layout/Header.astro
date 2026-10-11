@@ -1,3 +1,29 @@
-<header class="site-header" aria-label="Cabeçalho técnico provisório">
-  <div class="container"><span class="brand">Lavender Cerâmicas</span></div>
+---
+interface Props { overlay?: boolean; }
+const {overlay=false} = Astro.props;
+---
+<header class:list={['site-header',{'site-header--overlay':overlay}]} aria-label="Cabeçalho Lavender Cerâmicas">
+  <div class="site-header__bar">
+    <nav class="site-header__nav" aria-label="Navegação desta página">
+      <a href="#pecas">Loja</a>
+      <a href="#personalizadas">Coleções</a>
+      <a href="#personalizadas">Encomendas</a>
+      <span class="site-header__pending" title="Página institucional ainda não implementada">Sobre</span>
+    </nav>
+
+    <a class="site-header__brand" href="/" aria-label="Lavender Cerâmicas — início">
+      <span class="site-header__brand-name">LAVENDER</span>
+      <span class="site-header__brand-subname">CERÂMICAS</span>
+      <small class="site-header__brand-caveat">LOGO A VETORIZAR</small>
+    </a>
+
+    <div class="site-header__tools" aria-label="Controles comerciais ainda pendentes de aprovação">
+      <span class="site-header__search" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+        <span>O que você está procurando?</span>
+      </span>
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="9" r="3"/><path d="M5.5 18.5c1.5-4.5 11.5-4.5 13 0"/></svg>
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h2l2.2 12h12.2l2.1-9.1H6"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+    </div>
+  </div>
 </header>

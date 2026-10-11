@@ -1,13 +1,23 @@
 ---
-/** Somente estrutura; conteúdo, crop e autoplay dependem de assets/aceite VIS-01. */
-interface Props {poster:string; src?:string; alt?:string}
-const {poster,src,alt='Processo artesanal de cerâmica'}=Astro.props;
+interface Props {
+  poster?: string;
+  videoSrc?: string;
+  description?: string;
+}
+const {poster,videoSrc,description='Área reservada à filmagem real do processo artesanal de cerâmica'}=Astro.props;
 ---
-<div class="hero-media">
-  {src
-    ? <video controls playsinline preload="none" poster={poster} aria-label={alt}>
-        <source src={src} />
-        Seu navegador não suporta vídeo. 
+<div class="hero-visual" aria-label={description}>
+  {videoSrc
+    ? (
+      <video class="hero-visual__video" poster={poster} controls playsinline preload="metadata" aria-label={description}>
+        <source src={videoSrc} />
+        Seu navegador não suporta o vídeo.
       </video>
-    : <img src={poster} alt={alt} width="1440" height="900" loading="eager" />}
+    )
+    : poster
+      ? <img class="hero-visual__poster" src={poster} alt={description} fetchpriority="high" />
+      : <div class="hero-visual__fallback" role="img" aria-label={description}>
+          <span class="media-label">Imagem / vídeo artesanal pendente</span>
+        </div>
+  }
 </div>

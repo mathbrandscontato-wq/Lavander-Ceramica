@@ -1,10 +1,89 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroMedia from '../components/media/HeroMedia.astro';
+import ProductCard from '../components/catalog/ProductCard.astro';
+import {homePreviewCards,homePreviewFilters} from '../data/homePreview.mjs';
+import '../styles/home.css';
+
+const firstRow=homePreviewCards.filter(item=>item.row===1);
+const secondRow=homePreviewCards.filter(item=>item.row===2);
 ---
-<BaseLayout title="Lavender Cerâmicas — preparação técnica">
-  <section class="container foundation">
-    <p class="eyebrow">Homologação técnica · sem design aprovado aplicado</p>
-    <h1>Base de desenvolvimento Lavender Cerâmicas</h1>
-    <p>Esta página provisória valida apenas a estrutura do projeto. Não representa o site aprovado e não deve ser publicada como site comercial.</p>
+<BaseLayout title="Lavender Cerâmicas — Home P01 em homologação" description="Prévia técnica privada da Home Lavender Cerâmicas.">
+  <div class="home-reference-notice" role="status">
+    Prévia técnica privada · fotos, logo, fontes, textos e dados comerciais dependem de aprovação
+  </div>
+  <section class="home-hero" aria-labelledby="home-hero-title">
+    <HeroMedia />
+    <div class="home-hero__shade" aria-hidden="true"></div>
+    <div class="home-hero__content page-container">
+      <p class="home-hero__eyebrow">CERÂMICAS ARTESANAIS</p>
+      <h1 id="home-hero-title">Peças autorais <em>para o dia a dia.</em></h1>
+      <p class="home-hero__support">
+        Feitas à mão, que carregam histórias, afeto e tornam os momentos simples mais especiais.
+      </p>
+      <a class="home-hero__cta" href="#pecas">Explorar a loja <span aria-hidden="true">→</span></a>
+    </div>
+    <div class="home-hero__hint" aria-hidden="true">Vídeo real aguardando autorização</div>
   </section>
+
+  <section id="pecas" class="home-shop page-container" aria-labelledby="home-shop-title">
+    <div class="home-shop__heading">
+      <div>
+        <h2 id="home-shop-title">Nossas peças artesanais</h2>
+        <p>Cerâmicas únicas, feitas à mão com muito carinho.</p>
+      </div>
+      <div class="home-shop__filters" role="group" aria-label="Filtrar peças por categoria">
+        {homePreviewFilters.map((filter)=>(
+          <button type="button" class="home-shop__filter" data-filter={filter.id}
+            aria-pressed={filter.id==='todos' ? 'true' : 'false'}>{filter.label}</button>
+        ))}
+      </div>
+    </div>
+    <p id="home-shop-count" class="home-shop__status" role="status" aria-live="polite">
+      9 posições demonstrativas da referência A1; nenhum produto real cadastrado.
+    </p>
+    <div class="home-shop__grid home-shop__grid--four" data-home-row="first">
+      {firstRow.map(product=>(
+        <ProductCard {...product} preview priceLabel="Preço a confirmar" />
+      ))}
+    </div>
+    <div class="home-shop__grid home-shop__grid--five" data-home-row="second">
+      {secondRow.map(product=>(
+        <ProductCard {...product} preview priceLabel="Preço a confirmar" />
+      ))}
+    </div>
+  </section>
+
+  <section id="personalizadas" class="home-custom page-container" aria-labelledby="home-custom-title">
+    <div class="home-custom__backdrop">
+      <span class="media-label">Foto original do banner pendente</span>
+    </div>
+    <div class="home-custom__card">
+      <p class="home-custom__eyebrow">PEÇAS PERSONALIZADAS</p>
+      <h2 id="home-custom-title">Uma peça só sua.<em>Do seu jeitinho.</em></h2>
+      <p>Transforme suas ideias, referências e histórias em cerâmicas feitas especialmente para você.</p>
+      <span class="home-custom__button" aria-label="Solicitar peça personalizada — ação comercial ainda não autorizada">
+        Solicitar peça personalizada <span aria-hidden="true">→</span>
+      </span>
+    </div>
+  </section>
+
+  <script>
+    const filters = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('.product-card[data-category]'));
+    const message = document.querySelector<HTMLElement>('#home-shop-count');
+    filters.forEach(filter => {
+      filter.addEventListener('click', () => {
+        const selected = filter.dataset.filter ?? 'todos';
+        filters.forEach(item => item.setAttribute('aria-pressed',String(item === filter)));
+        let shown = 0;
+        for (const card of cards) {
+          const visible = selected === 'todos' || card.dataset.category === selected;
+          card.hidden = !visible;
+          if (visible) shown++;
+        }
+        if (message) message.textContent = `${shown} ${shown===1?'posição demonstrativa':'posições demonstrativas'} nesta categoria · dados reais pendentes.`;
+      });
+    });
+  </script>
 </BaseLayout>
