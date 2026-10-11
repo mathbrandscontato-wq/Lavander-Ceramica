@@ -1,0 +1,25 @@
+name: Validar fundação técnica
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+      - name: Preparar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependências do Astro (temporário, até gerar lockfile)
+        run: npm install --no-audit --no-fund
+      - name: Testar contratos de catálogo
+        run: npm test
+      - name: Validar build estático (sem deploy)
+        run: npm run build
+      - name: Verificar saída esperada
+        run: test -f dist/index.html

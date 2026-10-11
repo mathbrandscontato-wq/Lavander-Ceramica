@@ -17,3 +17,7 @@ docs/         gates, qualidade, operação e transferência
 ```
 
 Os diretórios não autorizam criar novas telas comerciais. Todas as rotas de produto e checkout continuam bloqueadas até as decisões da V3.
+
+## CMS em preparação
+
+A pasta `studio/` contém o esqueleto do painel Sanity com esquemas de produtos/categorias/coleções, sem projeto Sanity conectado. O contrato `src/lib/catalog.mjs` protege a vitrine pública, permitindo apenas registros de conteúdo aprovado e minimamente completo. A integração entre Sanity e Astro ainda depende de autorização, IDs reais e testes de publicação; não há API comercial.

@@ -20,3 +20,7 @@
 5. Testar publicação de produto, restauração/rollback e recuperação de conta.
 6. Entregar manual operacional, documentação de custos e renovação de domínio.
 7. Registrar aceite e responsáveis por suporte futuro.
+
+## Preparação técnica implementada
+
+A pasta `studio/` contém schemas de produto, categoria e coleção, em português. Não há login, conta Sanity, importação de produtos ou deploy configurados. Os testes de contrato de catálogo estão em `tests/` e a integração com o site Astro virá após a validação de dados e conta da proprietária.

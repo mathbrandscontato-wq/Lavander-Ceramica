@@ -6,3 +6,7 @@ dist/
 !.env.example
 .DS_Store
 *.log
+
+studio/node_modules/
+studio/dist/
+studio/.sanity/
