@@ -150,3 +150,27 @@ body.catalog-page .site-footer__legal {
   body.catalog-page .listing__grid--collection {row-gap:14px}
   body.catalog-page .site-footer__content {min-height:0}
 }
+
+
+/* P03/P04 R1b — impedir que o Header interno encubra títulos, breadcrumb e filtros.
+   A referência usa faixa mais baixa e recorte menos profundo nas páginas de listagem. */
+body.catalog-page .site-header {top:clamp(28px,3vw,44px)}
+body.catalog-page .site-header__bar {min-height:70px}
+body.catalog-page .site-header__nav,
+body.catalog-page .site-header__tools {height:70px}
+body.catalog-page .site-header__brand {
+  min-height:107px;
+  padding-top:15px;
+  padding-bottom:8px;
+  border-radius:0 0 47% 47% / 0 0 48% 48%;
+}
+body.catalog-page .listing {padding-top:clamp(152px,10.8vw,162px)}
+body.catalog-page--collection .listing__grid .product-card__media {
+  aspect-ratio:1.76;
+}
+@media(max-width:760px){
+  body.catalog-page .site-header__bar {min-height:70px}
+  body.catalog-page .site-header__brand {min-height:94px}
+  body.catalog-page .listing {padding-top:126px}
+  body.catalog-page--collection .listing__grid .product-card__media {aspect-ratio:1.32}
+}
