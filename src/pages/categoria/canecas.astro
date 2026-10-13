@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import CatalogListing from '../../components/catalog/CatalogListing.astro';
 import {canecasPreview,canecasFilters} from '../../data/catalogPreview.mjs';
 ---
-<BaseLayout title="Canecas — Lavender Cerâmicas · Prévia P03" description="Prévia privada P03 da categoria Canecas. Dados ilustrativos, não publicados.">
+<BaseLayout pageClass="catalog-page catalog-page--category" title="Canecas — Lavender Cerâmicas · Prévia P03" description="Prévia privada P03 da categoria Canecas. Dados ilustrativos, não publicados.">
   <CatalogListing kind="category" title="Canecas"
     intro="Cerâmicas únicas, feitas à mão para tornar o seu dia a dia mais especial."
     breadcrumb={['Loja','Canecas']}
