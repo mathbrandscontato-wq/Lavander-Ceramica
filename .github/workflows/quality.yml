@@ -37,8 +37,8 @@ jobs:
           CHROME=$(command -v google-chrome || command -v chromium)
           "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,2800 --screenshot=p01-desktop-1440.png --virtual-time-budget=2500 http://127.0.0.1:4321/
           test -s p01-desktop-1440.png
-          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,2200 --screenshot=p03-canecas-desktop-1440.png --virtual-time-budget=2500 http://127.0.0.1:4321/categoria/canecas/
-          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,2200 --screenshot=p04-personalizadas-desktop-1440.png --virtual-time-budget=2500 http://127.0.0.1:4321/colecoes/personalizadas/
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1200 --screenshot=p03-canecas-desktop-1440.png --virtual-time-budget=2500 http://127.0.0.1:4321/categoria/canecas/
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1200 --screenshot=p04-personalizadas-desktop-1440.png --virtual-time-budget=2500 http://127.0.0.1:4321/colecoes/personalizadas/
           test -s p03-canecas-desktop-1440.png
           test -s p04-personalizadas-desktop-1440.png
       - name: Guardar capturas A6/A7 (7 dias; sem deploy)
