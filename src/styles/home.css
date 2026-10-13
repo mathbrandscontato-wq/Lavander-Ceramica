@@ -79,7 +79,7 @@
 
 
 /* P01-R1 — revisão editorial das dimensões da referência A1. */
-.home-reference-notice {display:none}
+/* Nota de homologação visível para leitores de tela pela classe sr-only, mas fora do fluxo visual. */
 .home-hero {min-height:clamp(600px,55vw,850px)}
 .home-hero__content {position:relative;padding:150px 0 80px}
 .home-hero__content > * {margin-left:clamp(10px,2vw,30px)}
