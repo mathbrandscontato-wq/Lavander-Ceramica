@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {manifestoPreview} from '../data/manifestoPreview.mjs';
+import '../styles/manifesto.css';
+---
+<BaseLayout pageClass="internal-page manifesto-page" title="Manifesto — Lavender Cerâmicas | Prévia P07"
+ description="Prévia privada do Manifesto; texto editorial ainda sujeito à aprovação da proprietária.">
+  <article class="manifesto page-container" aria-labelledby="manifesto-title">
+    <div class="manifesto__text">
+      <h1 id="manifesto-title">Manifesto</h1>
+      <div class="manifesto__copy">
+        {manifestoPreview.paragraphs.map(paragraph=><p>{paragraph}</p>)}
+      </div>
+      <p class="sr-only" role="note">Este texto foi adaptado da referência visual A5 como proposta editorial. Não foi aprovado como depoimento da proprietária.</p>
+    </div>
+    <div class="manifesto__photo" role="img" aria-label="Fotografia artesanal oficial da Lavender ainda não fornecida">
+      <span>Fotografia editorial original pendente</span>
+    </div>
+  </article>
+</BaseLayout>

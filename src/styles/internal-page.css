@@ -1,0 +1,29 @@
+/* Estilos compartilhados para páginas internas P05/P07, isolados das P01/P03/P04.
+   Geometria editorial de prévia; aguardam fontes/medidas oficiais M01. */
+body.internal-page .site-header {
+  position:relative;
+  width:100%;
+  padding-top:clamp(18px,2.35vw,34px);
+  margin-bottom:clamp(50px,5vw,78px);
+}
+body.internal-page .site-header__bar {
+  width:min(calc(100% - clamp(48px,8.7vw,140px)),1440px);
+  min-height:72px;
+}
+body.internal-page .site-header__nav,
+body.internal-page .site-header__tools {height:72px}
+body.internal-page .site-header__brand {
+  min-height:109px;
+  padding-top:16px;
+  padding-bottom:11px;
+  border-radius:0 0 47% 47% / 0 0 44% 44%;
+}
+body.internal-page .site-footer {padding-top:clamp(30px,3vw,46px)}
+body.internal-page .site-footer__content {min-height:220px}
+@media(max-width:760px){
+ body.internal-page .site-header {padding-top:16px;margin-bottom:40px}
+ body.internal-page .site-header__bar {width:calc(100% - 24px);min-height:70px}
+ body.internal-page .site-header__nav,
+ body.internal-page .site-header__tools {height:70px}
+ body.internal-page .site-header__brand {min-height:94px;padding-block:19px 8px}
+}

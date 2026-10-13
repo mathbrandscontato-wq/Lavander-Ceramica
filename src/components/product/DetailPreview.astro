@@ -1,0 +1,126 @@
+---
+import '../../styles/product-detail.css';
+import {detailPreview as product} from '../../data/productDetailPreview.mjs';
+const gallery=product.images;
+---
+<section class="detail page-container" aria-labelledby="detail-title" data-detail-preview>
+  <div class="detail__top">
+    <div class="detail__gallery" aria-label="Galeria de prévia sem fotografias reais">
+      <div class="detail__thumbnails" aria-label="Escolher posição de imagem">
+        {gallery.map((image,index)=>
+          <button class="detail__thumb" type="button" data-gallery-index={index}
+            aria-label={image.name} aria-pressed={index===0?'true':'false'}>
+            <span class:list={['detail__thumb-media',`detail__thumb-media--${image.tone}`]} aria-hidden="true"></span>
+            <span class="sr-only">{image.name}</span>
+          </button>)}
+      </div>
+      <div class="detail__stage" role="group" aria-label="Visualização da mídia selecionada">
+        <div class="detail__stage-media" data-gallery-stage data-tone={gallery[0].tone} role="img"
+          aria-label={`Fotografia pendente — ${gallery[0].name}`}>
+          <span>Fotografia original pendente</span>
+        </div>
+        <button type="button" class="detail__arrow detail__arrow--previous" aria-label="Imagem anterior" data-gallery-back>‹</button>
+        <button type="button" class="detail__arrow detail__arrow--next" aria-label="Próxima imagem" data-gallery-forward>›</button>
+      </div>
+    </div>
+
+    <div class="detail__information">
+      <nav aria-label="Caminho do produto" class="detail__breadcrumb">
+        <a href="/">Início</a><span aria-hidden="true">›</span>
+        <a href="/categoria/canecas/">Canecas</a><span aria-hidden="true">›</span>
+        <span>Prévia de detalhe</span>
+      </nav>
+      <h1 id="detail-title">{product.title}</h1>
+      <p class="detail__price-status">Preço a confirmar</p>
+      <p class="detail__description">{product.description}</p>
+      <div class="detail__availability">
+        <strong>Disponibilidade</strong>
+        <span>Informação ainda não confirmada</span>
+      </div>
+      <div class="detail__quantity">
+        <span>Quantidade</span>
+        <span class="detail__quantity-skeleton" aria-label="Seleção de quantidade desativada até validar o estoque">− &nbsp; 1 &nbsp; +</span>
+      </div>
+      <div class="detail__cta-area" aria-label="Alternativas comerciais aguardando decisão">
+        <span class="detail__cta detail__cta--main" aria-disabled="true">Ação comercial em definição</span>
+        <span class="detail__cta detail__cta--secondary" aria-disabled="true">Mais informações — disponível após aprovação</span>
+        <p class="detail__commercial-note">Protótipo privado: sem pagamento, pedido ou mensagem enviada.</p>
+      </div>
+      <div class="detail__meta" role="note">
+        <p>Não foram confirmados frete, prazo, embalagem nem avaliações.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail__bottom">
+    <section class="detail__editorial" aria-label="Detalhes editoriais">
+      <div class="detail__tabs" role="tablist" aria-label="Informações da peça">
+        {product.tabs.map((tab,index)=>
+          <button type="button" class="detail__tab" role="tab"
+            id={`tab-${tab.id}`} aria-controls={`panel-${tab.id}`}
+            aria-selected={index===0?'true':'false'} tabindex={index===0?0:-1}
+            data-detail-tab={tab.id}>{tab.label}</button>)}
+      </div>
+      {product.tabs.map((tab,index)=>
+        <div role="tabpanel" class="detail__panel" id={`panel-${tab.id}`}
+          aria-labelledby={`tab-${tab.id}`} data-panel={tab.id} hidden={index!==0}>
+          <p>{tab.content}</p>
+        </div>)}
+    </section>
+    <aside class="detail__specs" aria-label="Especificações da peça">
+      <h2>Especificações</h2>
+      <dl>
+        <div><dt>Material</dt><dd>A confirmar</dd></div>
+        <div><dt>Dimensões</dt><dd>A confirmar</dd></div>
+        <div><dt>Capacidade</dt><dd>A confirmar</dd></div>
+        <div><dt>Acabamento</dt><dd>A confirmar</dd></div>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<script>
+  const root=document.querySelector<HTMLElement>('[data-detail-preview]');
+  if(root) {
+    const thumbnails=[...root.querySelectorAll<HTMLButtonElement>('[data-gallery-index]')];
+    const stage=root.querySelector<HTMLElement>('[data-gallery-stage]');
+    const media=[
+      {label:'Vista frontal',tone:'clay'},
+      {label:'Vista lateral',tone:'sand'},
+      {label:'Vista superior',tone:'cream'},
+      {label:'Detalhe da superfície',tone:'terra'},
+    ];
+    let active=0;
+    function setActive(index:number){
+      active=(index+media.length)%media.length;
+      thumbnails.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===active)));
+      if(stage){
+        stage.dataset.tone=media[active].tone;
+        stage.setAttribute('aria-label',`Fotografia pendente — ${media[active].label}`);
+      }
+    }
+    thumbnails.forEach((button,index)=>button.addEventListener('click',()=>setActive(index)));
+    root.querySelector('[data-gallery-back]')?.addEventListener('click',()=>setActive(active-1));
+    root.querySelector('[data-gallery-forward]')?.addEventListener('click',()=>setActive(active+1));
+    const tabs=[...root.querySelectorAll<HTMLButtonElement>('[data-detail-tab]')];
+    const panels=[...root.querySelectorAll<HTMLElement>('[data-panel]')];
+    function chooseTab(index:number){
+      tabs.forEach((tab,i)=>{
+        tab.setAttribute('aria-selected',String(i===index));
+        tab.tabIndex=i===index?0:-1;
+      });
+      panels.forEach((panel,i)=>panel.hidden=i!==index);
+    }
+    tabs.forEach((tab,index)=>{
+      tab.addEventListener('click',()=>chooseTab(index));
+      tab.addEventListener('keydown',(event)=>{
+        if(event.key==='ArrowRight'||event.key==='ArrowLeft'){
+          event.preventDefault();
+          const next=(index+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+          chooseTab(next);
+          tabs[next].focus();
+        }
+      });
+    });
+  }
+</script>
