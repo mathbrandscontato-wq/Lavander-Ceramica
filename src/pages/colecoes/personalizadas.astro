@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CatalogListing from '../../components/catalog/CatalogListing.astro';
+import {personalizadasPreview,personalizadasFilters} from '../../data/catalogPreview.mjs';
+---
+<BaseLayout title="Peças Personalizadas — Lavender Cerâmicas · Prévia P04" description="Prévia privada P04 da coleção Personalizadas. Nenhum dado comercial confirmado.">
+  <CatalogListing kind="collection" title="Peças Personalizadas"
+    intro="Transforme suas ideias, memórias e sentimentos em cerâmicas únicas. Peças feitas à mão, personalizadas com o que faz sentido para você, para tornar o seu dia a dia mais especial."
+    breadcrumb={['Coleções','Peças Personalizadas']}
+    items={personalizadasPreview} filters={personalizadasFilters} />
+</BaseLayout>

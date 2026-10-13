@@ -1,0 +1,128 @@
+---
+import ProductCard from '../catalog/ProductCard.astro';
+import '../../styles/listing.css';
+
+interface Item {
+  id:string;
+  name:string;
+  categoryId:string;
+  kind:string;
+  filter:string;
+  sortOrder:number;
+}
+interface FilterOption {id:string;label:string;}
+interface Props {
+  kind:'category'|'collection';
+  title:string;
+  intro:string;
+  breadcrumb:string[];
+  items:Item[];
+  filters:FilterOption[];
+}
+
+const {kind,title,intro,breadcrumb,items,filters}=Astro.props;
+const collection=kind==='collection';
+const sectionId=collection?'colecao-personalizadas':'categoria-canecas';
+const count=items.length;
+---
+<section class:list={['listing',{'listing--collection':collection}]} data-listing aria-labelledby={sectionId}>
+  <div class="listing__inner page-container">
+    <nav class="listing__breadcrumb" aria-label="Caminho da página">
+      <a href="/">Início</a>
+      {breadcrumb.map(label=><><span aria-hidden="true">›</span><span>{label}</span></>)}
+    </nav>
+
+    <div class="listing__heading">
+      <div class="listing__titleblock">
+        <h1 id={sectionId}>{title}</h1>
+        <p class="listing__description">{intro}</p>
+        {!collection && <p class="listing__count" data-listing-count>{count} posições de referência (catálogo real pendente)</p>}
+      </div>
+
+      <div class="listing__controls">
+        <div class="listing__filters" role="group" aria-label={collection?'Filtrar peças personalizáveis':'Filtrar canecas'}>
+          {filters.map(option=><button type="button" data-listing-filter={option.id}
+            class="listing__filter" aria-pressed={option.id==='todos'?'true':'false'}>{option.label}</button>)}
+        </div>
+        {!collection &&
+          <label class="listing__sort">
+            <span>Ordenar por</span>
+            <select data-listing-sort aria-label="Ordenar posições ilustrativas">
+              <option value="reference">Ordem da prancha</option>
+              <option value="name">Nome (A–Z)</option>
+            </select>
+          </label>}
+      </div>
+    </div>
+
+    {collection &&
+      <div class="listing__process">
+        <span class="listing__process-button" aria-disabled="true">
+          Conheça o processo <span aria-hidden="true">→</span>
+        </span>
+      </div>}
+
+    <p class="listing__live sr-only" aria-live="polite" role="status" data-listing-live>
+      {count} posições ilustrativas. Nenhum produto real cadastrado.
+    </p>
+    <div class:list={['listing__grid',{'listing__grid--category':!collection,'listing__grid--collection':collection}]}
+      data-listing-grid data-filtered="false">
+      {items.map(item=>
+        <div class="listing__item" data-preview-category={item.filter}
+          data-preview-order={item.sortOrder} data-preview-name={item.name}>
+          <ProductCard name={item.name} kind={item.kind} categoryId={item.categoryId}
+            preview priceLabel="Preço a confirmar" />
+        </div>)}
+    </div>
+
+    {collection && <aside class="listing__note" aria-label="Sobre a personalização">
+      <span class="listing__note-icon" aria-hidden="true">ⓘ</span>
+      <div class="listing__note-copy">
+        <strong>A personalização é feita em peças do nosso catálogo.</strong>
+        <p>Modelos, disponibilidade e possibilidades de personalização serão confirmados antes da publicação.</p>
+      </div>
+      <span class="listing__note-cta" aria-disabled="true">Fale sobre a sua ideia <span aria-hidden="true">→</span></span>
+    </aside>}
+  </div>
+</section>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-listing]')) {
+    const buttons=[...root.querySelectorAll<HTMLButtonElement>('[data-listing-filter]')];
+    const grid=root.querySelector<HTMLElement>('[data-listing-grid]');
+    const live=root.querySelector<HTMLElement>('[data-listing-live]');
+    const count=root.querySelector<HTMLElement>('[data-listing-count]');
+    const sort=root.querySelector<HTMLSelectElement>('[data-listing-sort]');
+    if (!grid) continue;
+    const cards=[...grid.querySelectorAll<HTMLElement>('[data-preview-category]')];
+    let selected='todos';
+
+    const update=()=>{
+      let visible=0;
+      buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.listingFilter===selected)));
+      grid.dataset.filtered=String(selected!=='todos');
+      for(const card of cards){
+        const show=selected==='todos'||card.dataset.previewCategory===selected;
+        card.hidden=!show;
+        if(show) visible++;
+      }
+      const label=`${visible} ${visible===1?'posição ilustrativa':'posições ilustrativas'} na seleção. Dados reais pendentes.`;
+      if(live)live.textContent=label;
+      if(count)count.textContent=label;
+    };
+    const arrange=()=>{
+      const order=sort?.value==='name'?'name':'reference';
+      [...cards].sort((a,b)=>order==='name'
+        ? String(a.dataset.previewName).localeCompare(String(b.dataset.previewName),'pt-BR')
+        : Number(a.dataset.previewOrder)-Number(b.dataset.previewOrder)
+      ).forEach(card=>grid.append(card));
+      update();
+    };
+    buttons.forEach(button=>button.addEventListener('click',()=>{
+      selected=button.dataset.listingFilter||'todos';
+      update();
+    }));
+    sort?.addEventListener('change',arrange);
+    update();
+  }
+</script>
