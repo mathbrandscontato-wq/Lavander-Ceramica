@@ -5,11 +5,10 @@ import ProductCard from '../components/catalog/ProductCard.astro';
 import {homePreviewCards,homePreviewFilters} from '../data/homePreview.mjs';
 import '../styles/home.css';
 
-const firstRow=homePreviewCards.filter(item=>item.row===1);
-const secondRow=homePreviewCards.filter(item=>item.row===2);
+const totalPreviewCards=homePreviewCards.length;
 ---
-<BaseLayout title="Lavender Cerâmicas — Home P01 em homologação" description="Prévia técnica privada da Home Lavender Cerâmicas.">
-  <div class="home-reference-notice" role="status">
+<BaseLayout headerOverlay title="Lavender Cerâmicas — Home P01 em homologação" description="Prévia técnica privada da Home Lavender Cerâmicas.">
+  <div class="home-reference-notice sr-only" role="note">
     Prévia técnica privada · fotos, logo, fontes, textos e dados comerciais dependem de aprovação
   </div>
   <section class="home-hero" aria-labelledby="home-hero-title">
@@ -39,16 +38,11 @@ const secondRow=homePreviewCards.filter(item=>item.row===2);
         ))}
       </div>
     </div>
-    <p id="home-shop-count" class="home-shop__status" role="status" aria-live="polite">
-      9 posições demonstrativas da referência A1; nenhum produto real cadastrado.
+    <p id="home-shop-count" class="home-shop__status sr-only" role="status" aria-live="polite">
+      {totalPreviewCards} posições demonstrativas da referência A1; nenhum produto real cadastrado.
     </p>
-    <div class="home-shop__grid home-shop__grid--four" data-home-row="first">
-      {firstRow.map(product=>(
-        <ProductCard {...product} preview priceLabel="Preço a confirmar" />
-      ))}
-    </div>
-    <div class="home-shop__grid home-shop__grid--five" data-home-row="second">
-      {secondRow.map(product=>(
+    <div class="home-shop__grid" data-filter-active="false" data-home-grid>
+      {homePreviewCards.map(product=>(
         <ProductCard {...product} preview priceLabel="Preço a confirmar" />
       ))}
     </div>
@@ -72,9 +66,11 @@ const secondRow=homePreviewCards.filter(item=>item.row===2);
     const filters = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-filter]'));
     const cards = Array.from(document.querySelectorAll<HTMLElement>('.product-card[data-category]'));
     const message = document.querySelector<HTMLElement>('#home-shop-count');
+    const grid = document.querySelector<HTMLElement>('[data-home-grid]');
     filters.forEach(filter => {
       filter.addEventListener('click', () => {
         const selected = filter.dataset.filter ?? 'todos';
+        if (grid) grid.dataset.filterActive = String(selected !== 'todos');
         filters.forEach(item => item.setAttribute('aria-pressed',String(item === filter)));
         let shown = 0;
         for (const card of cards) {
