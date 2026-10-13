@@ -87,3 +87,51 @@ img,video{max-width:100%}
  .site-header__brand-name{font-size:17px}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+
+/* P01-R1: ajuste proporcional à A1; valores ainda são provisórios até M01. */
+.page-container { width: min(calc(100% - clamp(40px,10.2vw,150px)),1440px); }
+.sr-only {position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.site-header--overlay {top:clamp(25px,2.55vw,40px)}
+.site-header__bar {
+ width:min(calc(100% - clamp(38px,9.4vw,160px)),1510px);
+ grid-template-columns:minmax(0,1fr) clamp(230px,18.6vw,285px) minmax(0,1fr);
+ padding-inline:clamp(22px,2vw,34px);
+}
+.site-header__brand {
+ width:clamp(230px,18.6vw,285px);
+ min-width:0;
+ min-height:clamp(132px,10.4vw,153px);
+ border-radius:0 0 44% 44% / 0 0 47% 47%;
+ position:relative;z-index:1;
+}
+.site-header__brand-name {font-size:clamp(26px,2.2vw,32px)}
+.site-header__brand-subname {letter-spacing:.24em}
+.site-header__nav {gap:clamp(15px,2.35vw,36px)}
+.site-footer {padding-top:clamp(58px,6.2vw,90px)}
+.site-footer__content {
+ grid-template-columns:minmax(0,1.12fr) minmax(0,1fr) minmax(0,1.05fr);
+ gap:clamp(28px,4vw,60px);
+ min-height:280px;
+}
+.site-footer__brand {padding-left:clamp(0px,1.5vw,20px)}
+.site-footer__illustration {align-self:end;margin-bottom:18px;min-height:210px;background:transparent;border-radius:10px}
+@media(max-width:1100px){
+ .site-header__bar {grid-template-columns:minmax(0,1fr) 205px minmax(0,1fr)}
+ .site-header__brand {width:205px;min-height:130px}
+ .site-footer__content {grid-template-columns:1fr 1.2fr}
+}
+@media(max-width:760px){
+ .page-container {width:calc(100% - 32px)}
+ .site-header__bar {width:calc(100% - 24px);grid-template-columns:minmax(0,1fr) 150px minmax(0,1fr);padding-inline:10px}
+ .site-header__brand {width:150px;min-height:94px}
+ .site-header__brand-name {font-size:20px}
+ .site-header__nav {overflow:hidden}
+ .site-footer__content {grid-template-columns:1fr;min-height:0}
+ .site-footer__brand {padding-left:0}
+}
+@media(max-width:390px){
+ .site-header__bar {grid-template-columns:minmax(0,1fr) 128px minmax(0,1fr)}
+ .site-header__brand {width:128px;min-height:94px}
+ .site-header__brand-name {font-size:17px}
+}
