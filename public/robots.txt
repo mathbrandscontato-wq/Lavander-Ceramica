@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /
+# Alterar somente no gate de publicação, junto com bloqueio de indexação na hospedagem.

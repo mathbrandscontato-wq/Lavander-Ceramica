@@ -1,0 +1,106 @@
+name: Validar fundação técnica
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  astro:
+    name: Astro — contrato, teste e build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+      - name: Preparar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependências do Astro (lockfile ainda pendente)
+        run: npm install --no-audit --no-fund
+      - name: Testar contratos de catálogo
+        run: npm test
+      - name: Validar build estático (sem deploy)
+        run: npm run build
+      - name: Verificar saída esperada
+        run: |
+          test -f dist/index.html
+          test -f dist/categoria/canecas/index.html
+          test -f dist/colecoes/personalizadas/index.html
+          test -f dist/produto/amostra-tecnica/index.html
+          test -f dist/manifesto/index.html
+      - name: Gerar capturas de homologação privadas (Chromium em runner)
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 >/tmp/lavender-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4321/ >/dev/null && break || sleep 1; done
+          CHROME=$(command -v google-chrome || command -v chromium)
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,2800 --screenshot=p01-desktop-1440.png --virtual-time-budget=2500 http://127.0.0.1:4321/
+          test -s p01-desktop-1440.png
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1200 --screenshot=p03-canecas-desktop-1440.png --virtual-time-budget=2500 http://127.0.0.1:4321/categoria/canecas/
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1200 --screenshot=p04-personalizadas-desktop-1440.png --virtual-time-budget=2500 http://127.0.0.1:4321/colecoes/personalizadas/
+          test -s p03-canecas-desktop-1440.png
+          test -s p04-personalizadas-desktop-1440.png
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1200 --screenshot=p05-produto-desktop-1440.png --virtual-time-budget=2200 http://127.0.0.1:4321/produto/amostra-tecnica/
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1100 --screenshot=p07-manifesto-desktop-1440.png --virtual-time-budget=2200 http://127.0.0.1:4321/manifesto/
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,1750 --screenshot=p07-manifesto-mobile-390.png --virtual-time-budget=2200 http://127.0.0.1:4321/manifesto/
+          test -s p05-produto-desktop-1440.png
+          test -s p07-manifesto-desktop-1440.png
+          test -s p07-manifesto-mobile-390.png
+      - name: Guardar capturas A2/A3/A5/B4 (7 dias; sem deploy)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-p05-p07-capturas
+          path: |
+            p05-produto-desktop-1440.png
+            p07-manifesto-desktop-1440.png
+            p07-manifesto-mobile-390.png
+          retention-days: 7
+          if-no-files-found: error
+      - name: Guardar capturas A6/A7 (7 dias; sem deploy)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-p03-p04-capturas-desktop
+          path: |
+            p03-canecas-desktop-1440.png
+            p04-personalizadas-desktop-1440.png
+          retention-days: 7
+          if-no-files-found: error
+      - name: Guardar captura A1 (7 dias)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-p01-captura-1440
+          path: p01-desktop-1440.png
+          retention-days: 7
+          if-no-files-found: error
+      - name: Guardar prévia HTML privada (7 dias; sem deploy)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-home-p01-previa
+          path: dist/
+          retention-days: 7
+          if-no-files-found: error
+
+  studio:
+    name: Sanity — tipos e build estático do painel
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SANITY_STUDIO_PROJECT_ID: t4nkzeaq
+      SANITY_STUDIO_DATASET: production
+      SANITY_TELEMETRY_DISABLED: '1'
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v4
+      - name: Preparar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependências do Studio (lockfile ainda pendente)
+        run: npm --prefix studio install --no-audit --no-fund
+      - name: Verificar tipos dos schemas
+        run: npm --prefix studio run check
+      - name: Construir Studio sem publicar
+        run: npm --prefix studio run build

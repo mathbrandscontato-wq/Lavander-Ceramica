@@ -1,0 +1,33 @@
+@import './internal-page.css';
+/* P07 A5/B4 — metade editorial em duas colunas; texto precede fotografia no DOM e mobile. */
+body.manifesto-page .site-header{margin-bottom:clamp(30px,2.5vw,39px)}
+.manifesto{display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:clamp(590px,49vw,720px);border-radius:9px;overflow:hidden;border:1px solid #e7e0dc}
+.manifesto__text{padding:clamp(25px,3.3vw,54px);display:flex;flex-direction:column;justify-content:center;min-width:0}
+.manifesto__text h1{font:400 clamp(64px,5.8vw,92px)/1.02 Georgia,'Times New Roman',serif;letter-spacing:-.055em;color:#17172d;margin:0 0 25px}
+.manifesto__copy{max-width:590px;color:#4c4756;font-size:clamp(13px,1.01vw,16px);line-height:1.49}
+.manifesto__copy p{margin:0 0 18px}
+.manifesto__copy p:last-child{margin-bottom:0}
+.manifesto__photo{min-height:100%;position:relative;display:flex;justify-content:center;align-items:end;padding:30px;
+background:radial-gradient(ellipse at 60% 60%,rgba(198,157,126,.72),transparent 29%),
+radial-gradient(ellipse at 30% 30%,rgba(223,199,163,.55),transparent 38%),
+linear-gradient(135deg,#b49271,#5d453c 70%,#a9815c);}
+.manifesto__photo::before{content:'';width:42%;height:42%;position:absolute;bottom:15%;left:30%;
+background:linear-gradient(90deg,#bc926c,#edccaa,#b58862);border-radius:18% 18% 38% 38%;
+box-shadow:inset -30px 0 20px rgba(91,55,37,.15),0 45px 36px rgba(42,29,21,.3)}
+.manifesto__photo span{position:relative;padding:9px 15px;border:1px solid rgba(255,255,255,.5);
+border-radius:999px;background:rgba(255,255,255,.66);color:#564234;font-size:11px;text-align:center}
+@media(max-width:1050px){
+ .manifesto{min-height:0;grid-template-columns:1fr 1fr}
+ .manifesto__text{padding:27px}
+ .manifesto__text h1{font-size:clamp(55px,6vw,72px)}
+ .manifesto__copy{font-size:13px}
+}
+@media(max-width:760px){
+ body.manifesto-page .site-header{margin-bottom:30px}
+ .manifesto{display:flex;flex-direction:column}
+ .manifesto__text{padding:26px 20px 30px}
+ .manifesto__text h1{font-size:clamp(58px,12vw,78px);margin-bottom:19px}
+ .manifesto__copy{font-size:15px;line-height:1.58}
+ .manifesto__copy p{margin-bottom:18px}
+ .manifesto__photo{min-height:clamp(310px,92vw,530px)}
+}

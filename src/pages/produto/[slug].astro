@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DetailPreview from '../../components/product/DetailPreview.astro';
+import {detailPreview} from '../../data/productDetailPreview.mjs';
+
+export function getStaticPaths(){
+  // Amostra isolada. Nenhum SKU real foi cadastrado ou liberado.
+  return [{params:{slug:detailPreview.slug}}];
+}
+---
+<BaseLayout pageClass="internal-page product-page" title="Prévia P05 — Detalhe de produto | Lavender Cerâmicas"
+ description="Prévia técnica privada de detalhe de produto; sem dados comerciais e sem vendas.">
+  <DetailPreview />
+</BaseLayout>
