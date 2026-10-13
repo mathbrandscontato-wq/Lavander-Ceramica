@@ -174,3 +174,16 @@ body.catalog-page--collection .listing__grid .product-card__media {
   body.catalog-page .listing {padding-top:126px}
   body.catalog-page--collection .listing__grid .product-card__media {aspect-ratio:1.32}
 }
+
+
+/* P03/P04 R1c — a cápsula central da marca não define a altura da barra.
+   Nas pranchas A6/A7 ela ultrapassa a faixa clara, sem deslocar o catálogo. */
+body.catalog-page .site-header__bar {position:relative}
+body.catalog-page .site-header__nav {grid-column:1}
+body.catalog-page .site-header__tools {grid-column:3}
+body.catalog-page .site-header__brand {
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+}
