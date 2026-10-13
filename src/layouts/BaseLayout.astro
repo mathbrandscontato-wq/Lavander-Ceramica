@@ -2,8 +2,8 @@
 import '../styles/base.css';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
-interface Props {title:string;description?:string;headerOverlay?:boolean;}
-const {title,description='Ambiente técnico não publicado.',headerOverlay=false}=Astro.props;
+interface Props {title:string;description?:string;headerOverlay?:boolean;pageClass?:string;}
+const {title,description='Ambiente técnico não publicado.',headerOverlay=false,pageClass=''}=Astro.props;
 ---
 <!doctype html>
 <html lang="pt-BR">
@@ -15,7 +15,7 @@ const {title,description='Ambiente técnico não publicado.',headerOverlay=false
     <meta name="theme-color" content="#f8f5f1" />
     <title>{title}</title>
   </head>
-  <body>
+  <body class={pageClass}>
     <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
     <Header overlay={headerOverlay} />
     <main id="conteudo"><slot /></main>
