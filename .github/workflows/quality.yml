@@ -30,6 +30,8 @@ jobs:
           test -f dist/index.html
           test -f dist/categoria/canecas/index.html
           test -f dist/colecoes/personalizadas/index.html
+          test -f dist/produto/amostra-tecnica/index.html
+          test -f dist/manifesto/index.html
       - name: Gerar capturas de homologação privadas (Chromium em runner)
         run: |
           npm run preview -- --host 127.0.0.1 --port 4321 >/tmp/lavender-preview.log 2>&1 &
@@ -41,6 +43,22 @@ jobs:
           "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1200 --screenshot=p04-personalizadas-desktop-1440.png --virtual-time-budget=2500 http://127.0.0.1:4321/colecoes/personalizadas/
           test -s p03-canecas-desktop-1440.png
           test -s p04-personalizadas-desktop-1440.png
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1200 --screenshot=p05-produto-desktop-1440.png --virtual-time-budget=2200 http://127.0.0.1:4321/produto/amostra-tecnica/
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1100 --screenshot=p07-manifesto-desktop-1440.png --virtual-time-budget=2200 http://127.0.0.1:4321/manifesto/
+          "$CHROME" --headless --no-sandbox --disable-gpu --hide-scrollbars --window-size=390,1750 --screenshot=p07-manifesto-mobile-390.png --virtual-time-budget=2200 http://127.0.0.1:4321/manifesto/
+          test -s p05-produto-desktop-1440.png
+          test -s p07-manifesto-desktop-1440.png
+          test -s p07-manifesto-mobile-390.png
+      - name: Guardar capturas A2/A3/A5/B4 (7 dias; sem deploy)
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-p05-p07-capturas
+          path: |
+            p05-produto-desktop-1440.png
+            p07-manifesto-desktop-1440.png
+            p07-manifesto-mobile-390.png
+          retention-days: 7
+          if-no-files-found: error
       - name: Guardar capturas A6/A7 (7 dias; sem deploy)
         uses: actions/upload-artifact@v4
         with:
