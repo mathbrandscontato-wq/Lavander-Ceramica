@@ -30,3 +30,21 @@ Documento `Lavender_Ceramicas_Especificacao_Implementacao_V3_Revisada.docx`, pá
 - [ ] Conteúdo real e assets originais aprovados pela direção e pela Marina posteriormente.
 - [ ] Homepage mobile aguarda CON-01/03 e destinação do nono item.
 - [ ] Capturas de referência A1 e evidência de comparação anexadas em área privada de QA (não versionar imagens sem licença).
+
+
+## Revisão P01-R1 — 13/10/2026
+
+Pacote de cinco correções aprovado pela direção de arte neste projeto. A revisão permanece uma **implementação para aprovação**, não o aceite G2 nem a liberação para publicação.
+
+1. **Margens e containers:** aumentada a margem editorial de hero, vitrine e footer; banner passou a ter largura própria.
+2. **Header e tipografia:** recorte central ampliado e aprofundado, melhor hierarquia de marca provisória e título, sem substituir o logo vetorial real.
+3. **Filtros:** uma única lista de nove cards, com grid CSS 4+5 no estado "Todos". Ao escolher categoria, o grid reorganiza os cards visíveis sem deixar espaços da antiga divisão em duas grades.
+4. **Banner:** ampliadas altura, presença do card lavanda e escala do título; fotografia continua pendente.
+5. **UX:** `headerOverlay` tornou-se opção por rota; header/footer usam âncoras para home, ícones de compra permanecem decorativos; aviso de homologação não desloca o conteúdo.
+
+### Critérios de aceite parcial
+- Automatizar `npm test` e `npm run build`.
+- Produzir nova captura 1440px e comparar com A1 e implementação anterior.
+- Confirmar visualmente sem distorções graves; a nota de fidelidade final depende dos ativos reais e M01.
+- Mobile B1 e elementos de personalização permanecem bloqueados por conflitos da V3.
+- **Não contatar Marina, não criar convites, não publicar, não mesclar em main.**
