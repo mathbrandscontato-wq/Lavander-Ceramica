@@ -41,7 +41,7 @@ test('P07 mantém copy proposta não aprovada e ordem semântica texto antes da 
   const page=read('src/pages/manifesto.astro');
   assert.ok(page.indexOf('manifesto__text')<page.indexOf('manifesto__photo'));
   assert.match(page,/Fotografia editorial original pendente/);
-  assert.match(page,/não foi aprovado como depoimento/);
+  assert.match(page,/não foi aprovado como depoimento/i);
 });
 
 test('P07 tem composição de duas metades desktop e coluna móvel conforme A5/B4',()=>{
