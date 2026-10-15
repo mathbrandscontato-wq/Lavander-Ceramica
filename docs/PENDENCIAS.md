@@ -1,3 +1,5 @@
+> ATUALIZAÇÃO 15/10/2026: registro abaixo preservado como histórico da primeira base. A direção autorizou fotos provisórias, vetorização, escolha de fontes e publicação sem conferências intermediárias. O estado atual está em `ENTREGA_V2.md`.
+
 # Registro de pendências antes de substituições visuais
 
 15/10/2026 · Math Brands · branch `feat/prototipo-a-catalogo-interativo`

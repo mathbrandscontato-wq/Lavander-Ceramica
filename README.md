@@ -2,7 +2,7 @@
 
 Repositório de desenvolvimento do site Lavender Cerâmicas, gerenciado inicialmente pela Math Brands e com transferência de titularidade planejada para a cliente.
 
-**Status desta branch:** estrutura navegável do Protótipo A para revisão; fidelidade visual e mídia bloqueadas por originais pendentes. Sem publicação, domínio ou integração comercial. Não constitui entrega visual final.
+**Status desta branch:** demonstração com fotos provisórias, logo em SVG e fontes locais Cormorant Garamond/Inter. Publicação autorizada por Matheus em 15/10/2026; sem domínio próprio ou integração comercial. Dados e compra permanecem demonstrativos. Veja `docs/ENTREGA_V2.md`.
 
 O README original cita a especificação V3 como referência de governança. Ela não foi fornecida nem localizada nesta execução. A implementação usa somente o escopo explicitamente autorizado pelo Matheus e os documentos disponíveis. A conferência da V3 permanece registrada em `docs/PENDENCIAS.md`.
 
@@ -22,7 +22,7 @@ npm test
 npm run build
 ```
 
-A build gera a aplicação estática em `dist/` e uma prévia independente em `dist/Lavender_Previa_Estrutural.html`. Abra esse HTML diretamente no navegador, sem servidor. A versão independente usa rotas no fragmento (`#/loja`), mantendo os mesmos destinos lógicos. O catálogo é incorporado durante a build a partir do JSON canônico, sem uma segunda lista manual.
+A build gera a aplicação estática em `dist/` e uma prévia independente com fotos e fontes incorporadas em `dist/Lavender_Previa_Estrutural.html`. Abra esse HTML diretamente no navegador, sem servidor. A versão independente usa rotas no fragmento (`#/loja`), mantendo os mesmos destinos lógicos. O catálogo é incorporado durante a build a partir do JSON canônico, sem uma segunda lista manual.
 
 ## Escopo
 
@@ -34,8 +34,8 @@ A build gera a aplicação estática em `dist/` e uma prévia independente em `d
 
 ## Imagens e identidade
 
-O JSON original é preservado byte a byte em `public/data/CATALOGO_DEMONSTRATIVO.json`. Todas as fotos estão como `SOURCE_ASSET_PENDING`. Não foram inventadas fotos ou recortadas pranchas para simular assets finais. As áreas ausentes exibem estados explícitos. Logo textual, área da ilustração e fontes de sistema são provisórios; não representam reprodução final da marca.
+O JSON original é preservado byte a byte em `public/data/CATALOGO_DEMONSTRATIVO.json`. Os campos originais `SOURCE_ASSET_PENDING` foram preservados no JSON, mas `media.json` agora associa os IDs às fotos provisórias geradas com autorização do diretor. O logo foi reconstruído em SVG a partir da prancha e a ilustração do rodapé foi vetorizada. Cormorant Garamond e Inter são servidas localmente; as licenças acompanham os arquivos.
 
-Quando houver fotos autorizadas, adicione os arquivos em `public/assets/` e associe cada ID a um caminho `/assets/...` em `public/data/media.json`. Chaves institucionais previstas: `hero`, `custom-banner`, `manifesto` e `footer-art`. O mapeamento de mídias é separado do catálogo e não altera IDs, nomes ou preços. O HTML independente precisa ter as mídias incorporadas em uma etapa futura; hoje usa os mesmos estados pendentes, sem requisições externas.
+Quando houver fotos autorizadas, adicione os arquivos em `public/assets/` e associe cada ID a um caminho `/assets/...` em `public/data/media.json`. Chaves institucionais previstas: `hero`, `custom-banner`, `manifesto` e `footer-art`. O mapeamento de mídias é separado do catálogo e não altera IDs, nomes ou preços. O HTML independente incorpora fotos, SVGs e fontes para funcionar sem requisições externas.
 
-Antes de fechar a UI, substituir marca e tipografia apenas pelos originais aprovados, medir e comparar. Consultar `docs/PENDENCIAS.md` e `docs/QA.md`.
+As decisões provisórias foram delegadas a esta implementação. Trocar os materiais pelos arquivos definitivos da Marina quando disponíveis, mantendo IDs e caminhos. Consultar `docs/ENTREGA_V2.md`.

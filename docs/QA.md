@@ -1,3 +1,5 @@
+> ATUALIZAÇÃO 15/10/2026: registro abaixo preservado como histórico da primeira base. A direção autorizou fotos provisórias, vetorização, escolha de fontes e publicação sem conferências intermediárias. O estado atual está em `ENTREGA_V2.md`.
+
 # QA da base do Protótipo A
 
 15/10/2026 · Verificação local, sem publicação · não representa homologação visual.
