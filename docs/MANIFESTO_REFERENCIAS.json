@@ -1,0 +1,170 @@
+[
+  {
+    "id": "A1",
+    "vis": "VIS-01",
+    "title": "Home desktop — referência soberana",
+    "source": "lavender_cerâmicas_peças_feitas_à_mão.png",
+    "package_file": "referencias/A1_lavender_cer_micas_pe_as_feitas___m_o_png",
+    "status": "APROVADO VISUALMENTE",
+    "pixel_dimensions": [
+      916,
+      1717
+    ],
+    "sha256": "e9c29fc923074642ffe872d134a6b42b3de51d4ce71d8cc11f001af57262747e",
+    "note": "Final: hero artesanal, 9 peças, banner com card lavanda sobre fotografia, footer."
+  },
+  {
+    "id": "A2",
+    "vis": "VIS-03",
+    "title": "Detalhe comum desktop — alternativa online",
+    "source": "a_clean_modern_e_commerce_product_page_mockup_in.png",
+    "package_file": "referencias/A2_a_clean_modern_e_commerce_product_page_mockup_in_png",
+    "status": "APROVADO VISUALMENTE (ALTERNATIVA)",
+    "pixel_dimensions": [
+      1312,
+      1199
+    ],
+    "sha256": "c02d3be7670666ed726dd3ee2eb21fc181b2070f98f9d6ba770e70534342132e",
+    "note": "Galeria lateral, preço ilustrativo, quantidade e CTAs de carrinho/compra."
+  },
+  {
+    "id": "A4",
+    "vis": "VIS-05",
+    "title": "Detalhe personalizável desktop",
+    "source": "image(5).png",
+    "package_file": "referencias/A4_image_5__png",
+    "status": "APROVADO VISUALMENTE",
+    "pixel_dimensions": [
+      1448,
+      1086
+    ],
+    "sha256": "6fcc98845dd1d1e6a81ead05537c877ef884117bd9367cf6d2582ebda5604182",
+    "note": "Escolha somente entre modelos do catálogo e descrição livre; demais informações ilustrativas."
+  },
+  {
+    "id": "A5",
+    "vis": "VIS-06",
+    "title": "Manifesto desktop",
+    "source": "image(6).png",
+    "package_file": "referencias/A5_image_6__png",
+    "status": "APROVADO VISUALMENTE",
+    "pixel_dimensions": [
+      1448,
+      1086
+    ],
+    "sha256": "f9de7576d9d340fdefa64b138ff09a5b1b1359ce3b15a411240c62aac8b28f32",
+    "note": "Texto editorial à esquerda e fotografia à direita, sem blocos extras."
+  },
+  {
+    "id": "A6",
+    "vis": "VIS-08",
+    "title": "Categoria Canecas desktop",
+    "source": "loja_de_canecas_lavender_cerâmicas.png",
+    "package_file": "referencias/A6_loja_de_canecas_lavender_cer_micas_png",
+    "status": "APROVADO VISUALMENTE",
+    "pixel_dimensions": [
+      1448,
+      1086
+    ],
+    "sha256": "dc19916c7ee7c105232d68dbe08cffc1a96209d4b56cbc6f507d0f38c3bbb3b5",
+    "note": "Grid, título, filtros e estrutura de categoria; conteúdo e ordenação exemplificativos."
+  },
+  {
+    "id": "A7",
+    "vis": "VIS-09",
+    "title": "Coleção personalizáveis desktop — versão final",
+    "source": "peças_personalizadas_em_cerâmica_lavanda.png",
+    "package_file": "referencias/A7_pe_as_personalizadas_em_cer_mica_lavanda_png",
+    "status": "APROVADO VISUALMENTE",
+    "pixel_dimensions": [
+      1448,
+      1086
+    ],
+    "sha256": "9aeeaea63cc21e9b1cf894c94fd5725aaa102fca9057618a69c291cb43305374",
+    "note": "SEM imagem lateral; tags centralizadas ACIMA do título; grade."
+  },
+  {
+    "id": "B1",
+    "vis": "VIS-02",
+    "title": "Estudos da Home mobile (com conflitos)",
+    "source": "lavender_cerâmicas_afeto_em_cada_peça.png",
+    "package_file": "referencias/B1_lavender_cer_micas_afeto_em_cada_pe_a_png",
+    "status": "SUPORTE CONFLITANTE",
+    "pixel_dimensions": [
+      941,
+      1672
+    ],
+    "sha256": "ed2793678a81b85481c10615718668ab42a2459950c189d5f72625e937b93b81",
+    "note": "Contém seções/favoritos/newsletter ausentes de A1. Não transportar extras."
+  },
+  {
+    "id": "B2",
+    "vis": "VIS-04",
+    "title": "Detalhe mobile — geometria, CTA WhatsApp excluído",
+    "source": "página_de_caneca_personalizada_lavender_cerâmicas.png",
+    "package_file": "referencias/B2_p_gina_de_caneca_personalizada_lavender_cer_micas_png",
+    "status": "SUPORTE ESTRUTURAL",
+    "pixel_dimensions": [
+      941,
+      1672
+    ],
+    "sha256": "4f162a4fc57e947c809494751da18eca6c5ade2c574a34a3206823595971c7d6",
+    "note": "Somente galeria empilhada, texto, tabela e footer; CTA online vem de A2."
+  },
+  {
+    "id": "B3",
+    "vis": "VIS-05",
+    "title": "Estudo mobile insuficiente para personalização",
+    "source": "página_de_caneca_personalizada_lavender_cerâmicas.png",
+    "package_file": "referencias/B3_p_gina_de_caneca_personalizada_lavender_cer_micas_png",
+    "status": "NÃO É BASELINE PARA PERSONALIZAÇÃO",
+    "pixel_dimensions": [
+      941,
+      1672
+    ],
+    "sha256": "4f162a4fc57e947c809494751da18eca6c5ade2c574a34a3206823595971c7d6",
+    "note": "Não contém seletor de modelos + campo; use A4 para esses controles, sem inventar recursos."
+  },
+  {
+    "id": "B4",
+    "vis": "VIS-07",
+    "title": "Manifesto mobile",
+    "source": "manifesto_lavender_cerâmicas.png",
+    "package_file": "referencias/B4_manifesto_lavender_cer_micas_png",
+    "status": "APROVADO VISUALMENTE",
+    "pixel_dimensions": [
+      941,
+      1672
+    ],
+    "sha256": "05ac509af89aa7e7b7862eb2aa226447d41a438aad3d68312aed8256810508a7",
+    "note": "Texto antes da fotografia, bloco único, footer compartilhado."
+  },
+  {
+    "id": "B5",
+    "vis": "VIS-08",
+    "title": "Categoria Canecas mobile",
+    "source": "catálogo_lavanda_de_canecas_artesanais.png",
+    "package_file": "referencias/B5_cat_logo_lavanda_de_canecas_artesanais_png",
+    "status": "APROVADO VISUALMENTE",
+    "pixel_dimensions": [
+      941,
+      1672
+    ],
+    "sha256": "bd7bf329ca23a081cf7002c7f026216bc76ec2afd5b358d90d040fc60e4230e4",
+    "note": "Grid em 2 colunas; dados e contagem divergentes da A6 — normalizar pela fonte única."
+  },
+  {
+    "id": "B6",
+    "vis": "VIS-10",
+    "title": "Coleção personalizáveis mobile",
+    "source": "coleção_de_cerâmicas_personalizadas.png",
+    "package_file": "referencias/B6_cole__o_de_cer_micas_personalizadas_png",
+    "status": "APROVADO VISUALMENTE",
+    "pixel_dimensions": [
+      941,
+      1672
+    ],
+    "sha256": "7e6da3c3ca4307e964302d8d4e13e672835c94c86df1385496aa439bcec5984c",
+    "note": "Tags acima do título, grid 2 colunas, sem hero com imagem lateral."
+  }
+]
