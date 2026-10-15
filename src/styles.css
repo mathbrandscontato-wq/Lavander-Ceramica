@@ -1,9 +1,9 @@
-@font-face{font-family:"Cormorant Garamond";font-style:normal;font-weight:400;font-display:swap;src:url("/Lavander-Ceramica/assets/fonts/cormorant-garamond-normal-400.woff") format("woff")}
-@font-face{font-family:"Cormorant Garamond";font-style:normal;font-weight:500;font-display:swap;src:url("/Lavander-Ceramica/assets/fonts/cormorant-garamond-normal-500.woff") format("woff")}
-@font-face{font-family:"Cormorant Garamond";font-style:italic;font-weight:400;font-display:swap;src:url("/Lavander-Ceramica/assets/fonts/cormorant-garamond-italic-400.woff") format("woff")}
-@font-face{font-family:"Inter";font-style:normal;font-weight:400;font-display:swap;src:url("/Lavander-Ceramica/assets/fonts/inter-normal-400.woff") format("woff")}
-@font-face{font-family:"Inter";font-style:normal;font-weight:500;font-display:swap;src:url("/Lavander-Ceramica/assets/fonts/inter-normal-500.woff") format("woff")}
-@font-face{font-family:"Inter";font-style:normal;font-weight:600;font-display:swap;src:url("/Lavander-Ceramica/assets/fonts/inter-normal-600.woff") format("woff")}
+@font-face{font-family:"Cormorant Garamond";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/cormorant-garamond-normal-400.woff") format("woff")}
+@font-face{font-family:"Cormorant Garamond";font-style:normal;font-weight:500;font-display:swap;src:url("../assets/fonts/cormorant-garamond-normal-500.woff") format("woff")}
+@font-face{font-family:"Cormorant Garamond";font-style:italic;font-weight:400;font-display:swap;src:url("../assets/fonts/cormorant-garamond-italic-400.woff") format("woff")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:400;font-display:swap;src:url("../assets/fonts/inter-normal-400.woff") format("woff")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:500;font-display:swap;src:url("../assets/fonts/inter-normal-500.woff") format("woff")}
+@font-face{font-family:"Inter";font-style:normal;font-weight:600;font-display:swap;src:url("../assets/fonts/inter-normal-600.woff") format("woff")}
 /* Valores PROVISÓRIOS para revisão estrutural. Originais e medição M01 pendentes.
    Fontes de sistema, nenhum arquivo/font externo. Não são tokens aprovados. */
 :root{--paper:#faf7f2;--surface:#f2eee8;--ink:#191d39;--muted:#656778;--purple:#6343b1;--lavender:#e6dcf5;--line:#e5dfd8;--radius:9px;color-scheme:light;font-family:Inter,Arial,Helvetica,sans-serif;color:var(--ink);background:var(--paper)}
