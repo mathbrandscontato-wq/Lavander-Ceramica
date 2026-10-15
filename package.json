@@ -1,0 +1,6 @@
+{
+  "name": "lavender-prototipo-a", "version": "0.1.0", "private": true,
+  "type": "module", "description": "Prévia local demonstrativa, sem operação comercial",
+  "scripts": {"dev": "node server.mjs", "build": "node build.mjs", "test": "node --test tests/*.test.mjs", "check": "node --check src/app.js && node --check src/catalog.js && node --check src/preview.js"},
+  "engines": {"node": ">=20"}
+}
