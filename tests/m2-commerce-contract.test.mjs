@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {combineEditorialCommerce,moneyInCents,previewQuote,dropState,mockEvent} from '../src/lib/commerce/m2Contract.mjs';
-import {makeWooReader,loadM2Product} from '../src/lib/commerce/wooRead.mjs';
+import {makeWooReader,loadM2Product,reconcileCatalogReadOnly} from '../src/lib/commerce/wooRead.mjs';
 const editorial={productId:'M2-SKU-001',slug:'ficticio-m2',name:'Peça fictícia M2',
   publicationStatus:'approved',priceAmount:1,stockStatus:'available'};
 const woo={id:123,sku:'M2-SKU-001',status:'publish',price:'149.90',currency:'BRL',
@@ -63,4 +63,16 @@ test('Woo falha fechado em indisponibilidade, retorno vazio e conteúdo pendente
  let called=false;
  await assert.rejects(()=>loadM2Product({...editorial,publicationStatus:'pending'},async()=>{called=true;return woo}),{code:'EDITORIAL_NOT_APPROVED'});
  assert.equal(called,false);
+});
+
+test('conciliação somente leitura: mantém SKU autorizado e isola divergências',async()=>{
+ let calls=0;
+ const out=await reconcileCatalogReadOnly([
+  editorial,{...editorial,productId:'M2-MISSING'}, {...editorial,productId:'M2-SKU-001'}, {...editorial,productId:'M2-PENDING',publicationStatus:'pending'}],
+  async id=>{calls++;if(id==='M2-SKU-001')return woo;throw Object.assign(Error('none'),{code:'WOO_UNAVAILABLE'});}
+ );
+ assert.equal(out.products.length,1);
+ assert.deepEqual(out.blocked.map(x=>x.code),['WOO_UNAVAILABLE','SKU_DUPLICATE']);
+ assert.equal(out.mode,'read_only');
+ assert.equal(calls,2);
 });

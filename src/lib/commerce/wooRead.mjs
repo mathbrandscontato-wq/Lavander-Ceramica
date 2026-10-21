@@ -26,3 +26,21 @@ export async function loadM2Product(editorial,reader){
  if(editorial?.publicationStatus!=='approved')throw m2Error('EDITORIAL_NOT_APPROVED');
  return combineEditorialCommerce(editorial,await reader(sku(editorial.productId)));
 }
+
+/**
+ * Sincronizacao de LEITURA para a prova M2: projeção e divergências sem escrita remota.
+ * Produtos bloqueados não são enviados à vitrine. Não substitui filas nem reconciliador durável.
+ */
+export async function reconcileCatalogReadOnly(editorials,readWooBySku) {
+  if(!Array.isArray(editorials)) throw m2Error('EDITORIAL_INVALID');
+  const products=[],blocked=[],seen=new Set();
+  for(const e of editorials){
+    if(e?.publicationStatus!=='approved')continue;
+    const id=e?.productId;
+    if(seen.has(id)) {blocked.push({sku:id||null,code:'SKU_DUPLICATE'});continue;}
+    seen.add(id);
+    try {products.push(await loadM2Product(e,readWooBySku));}
+    catch(err){blocked.push({sku:id||null,code:err?.code||'COMMERCE_UNAVAILABLE'});}
+  }
+  return Object.freeze({products,blocked,mode:'read_only',commercialAuthority:'woocommerce',editorialAuthority:'sanity'});
+}
