@@ -37,6 +37,9 @@ jobs:
             sleep 3
           done
           echo 'Ambiente WordPress nao inicializado'; exit 1
+      - name: Ajustar permissões somente no volume descartável
+        run: |
+          docker compose -f tests/m2/compose.yaml exec -T -u root wordpress sh -c 'mkdir -p /var/www/html/wp-content/plugins /var/www/html/wp-content/upgrade /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content'
       - name: Instalar WooCommerce REAL em ambiente isolado
         shell: bash
         run: |
