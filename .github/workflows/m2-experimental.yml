@@ -1,0 +1,67 @@
+name: M2 WooCommerce efemero (sem deploy)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/m2-astro-sanity-woocommerce
+    paths:
+      - .github/workflows/m2-experimental.yml
+permissions:
+  contents: read
+concurrency:
+  group: m2-experimental
+  cancel-in-progress: true
+jobs:
+  ephemeral-woo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gerar segredos descartaveis no runner
+        shell: bash
+        run: |
+          for key in M2_DB_ROOT_PASSWORD M2_DB_PASSWORD M2_WP_ADMIN_PASSWORD; do
+            value="$(openssl rand -hex 24)"
+            echo "::add-mask::$value"
+            echo "$key=$value" >> "$GITHUB_ENV"
+          done
+      - name: Subir banco e WordPress locais
+        run: docker compose -f tests/m2/compose.yaml up -d
+      - name: Aguardar CLI e wp-config.php
+        run: |
+          for i in $(seq 1 45); do
+            if docker compose -f tests/m2/compose.yaml exec -T cli wp --info >/dev/null 2>&1 &&
+               docker compose -f tests/m2/compose.yaml exec -T cli test -f /var/www/html/wp-config.php; then
+              exit 0
+            fi
+            sleep 3
+          done
+          echo 'Ambiente WordPress nao inicializado'; exit 1
+      - name: Instalar WooCommerce REAL em ambiente isolado
+        shell: bash
+        run: |
+          docker compose -f tests/m2/compose.yaml exec -T cli wp core install             --url=http://localhost:8090 --title=M2-EFEMERO             --admin_user=m2-local --admin_password="$M2_WP_ADMIN_PASSWORD"             --admin_email=m2@example.invalid --skip-email
+          docker compose -f tests/m2/compose.yaml exec -T cli wp plugin install woocommerce --activate
+          docker compose -f tests/m2/compose.yaml exec -T cli wp option update woocommerce_manage_stock yes
+      - name: Prova real de SKU, preco e baixa idempotente
+        shell: bash
+        run: |
+          docker compose -f tests/m2/compose.yaml exec -T cli wp eval-file /m2/woo-probe.php | tee m2-woo-evidence.json
+          grep -q '"stock_after_reduce": 0' m2-woo-evidence.json
+          grep -q '"stock_after_duplicate_reduce": 0' m2-woo-evidence.json
+      - name: Registrar estado sanitizado do ambiente
+        if: always()
+        run: docker compose -f tests/m2/compose.yaml ps > m2-compose-status.txt 2>&1 || true
+      - name: Anexar evidencias (5 dias, sem publicar)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2-woo-evidencias
+          path: |
+            m2-woo-evidence.json
+            m2-compose-status.txt
+          retention-days: 5
+          if-no-files-found: ignore
+      - name: Destruir containers e volumes efemeros
+        if: always()
+        run: docker compose -f tests/m2/compose.yaml down -v --remove-orphans || true
