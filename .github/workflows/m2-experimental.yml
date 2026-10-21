@@ -44,7 +44,7 @@ jobs:
         shell: bash
         run: |
           docker compose -f tests/m2/compose.yaml exec -T cli wp core install             --url=http://localhost:8090 --title=M2-EFEMERO             --admin_user=m2-local --admin_password="$M2_WP_ADMIN_PASSWORD"             --admin_email=m2@example.invalid --skip-email
-          docker compose -f tests/m2/compose.yaml exec -T cli wp plugin install woocommerce --activate
+          docker compose -f tests/m2/compose.yaml exec -T -u root cli wp plugin install woocommerce --activate --allow-root
           docker compose -f tests/m2/compose.yaml exec -T cli wp option update woocommerce_manage_stock yes
       - name: Prova real de SKU, preco e baixa idempotente
         shell: bash
