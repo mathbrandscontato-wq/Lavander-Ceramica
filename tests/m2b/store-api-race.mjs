@@ -37,8 +37,9 @@ async function prepare(who){
  if(!session.token&&!session.nonce)throw Error('SEM_NONCE_OU_CART_TOKEN_'+who);
  const added=await request('POST','/cart/add-item',session,{id:productId,quantity:1});
  if(added.http!==200)throw Error('CARRINHO_'+who+'_FALHOU_'+added.http+'_CODE_'+(added.body.code||'none'));
- const expected=added.body?.totals?.total_price;
- if(!expected)throw Error('CART_TOTAL_MISSING');
+ const expected=added.body?.totals?.total_price||null;
+ const present=Array.isArray(added.body?.items)&&added.body.items.some(item=>Number(item.id)===productId);
+ if(!present)throw Error('CART_ITEM_MISSING_'+who+'_body_keys_'+Object.keys(added.body||{}).join(','));
  return {session,expected:String(expected),initialHttp:initial.http,cartHttp:added.http};
 }
 const first=await prepare('A'),second=await prepare('B');
@@ -46,7 +47,7 @@ if(first.session.token && second.session.token && first.session.token===second.s
 if(!first.session.token&&!second.session.token && (!first.session.cookie||first.session.cookie===second.session.cookie))throw Error('SESSOES_NAO_ISOLADAS_POR_COOKIE');
 const payloadFor=(who,expected)=>({
  billing_address:address(who),shipping_address:address(who),
- payment_method:'bacs',payment_data:[],expected_total:expected
+ payment_method:'bacs',payment_data:[],...(expected?{expected_total:expected}:{})
 });
 const t0=Date.now();
 // Requisições concorrentes reais, sem sleeps artificiais entre POSTs.
@@ -66,7 +67,7 @@ const active=['on-hold','processing','completed'];
 const claims=results.filter(x=>x.http>=200&&x.http<300&&active.includes(x.status));
 const reported={schema:'m2b-store-api-v1',round,mode:'real_http_ephemeral',
   independent_sessions:true,session_mechanism:first.session.token&&second.session.token?'cart-token':'nonce-cookie',product_id:productId,initial_stock:1,
-  cart_totals:[first.expected,second.expected],parallel_checkout_start_ms:t0,
+  cart_totals:[first.expected,second.expected],server_cart_total_available:!!first.expected&&!!second.expected,parallel_checkout_start_ms:t0,
   parallel_checkout_elapsed_ms:Date.now()-t0,results,
   active_orders_claimed_by_store_api:claims.length,
   status:claims.length>1?'FALHOU':claims.length===1?'PARCIALMENTE_COMPROVADO':'NAO_EXECUTADO',
