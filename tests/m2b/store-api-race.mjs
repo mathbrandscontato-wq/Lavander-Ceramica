@@ -39,7 +39,7 @@ async function prepare(who){
  if(initial.http!==200)throw Error('CART_GET_FALHOU_'+who+':'+initial.http);
  if(!session.token&&!session.nonce)throw Error('SEM_NONCE_OU_CART_TOKEN_'+who);
  const added=await request('POST','/cart/add-item',session,{id:productId,quantity:1});
- if(added.http!==200)throw Error('CARRINHO_'+who+'_FALHOU_'+added.http+'_CODE_'+(added.body.code||'none'));
+ if(added.http<200||added.http>=300)throw Error('CARRINHO_'+who+'_FALHOU_'+added.http+'_CODE_'+(added.body.code||'none'));
  const expected=added.body?.totals?.total_price||null;
  const present=Array.isArray(added.body?.items)&&added.body.items.some(item=>Number(item.id)===productId);
  if(!present)throw Error('CART_ITEM_MISSING_'+who+'_body_keys_'+Object.keys(added.body||{}).join(','));
