@@ -163,3 +163,67 @@ Comparar implementação em viewport e dataset equivalentes à prancha VIS; lado
 F1 https://www.nuvemshop.com.br/planos-e-precos ; F2 https://atendimento.nuvemshop.com.br/pt_BR/dominios/como-usar-um-dominio-proprio-na-nuvemshop ; F3 https://www.nuvemshop.com.br/planos-e-precos ; F4 https://www.shopify.com/br/precos ; F5 https://woocommerce.com/document/configuring-woocommerce-settings/products/ ; F6 https://www.mercadopago.com.br/developers/pt/reference/online-payments/checkout-pro-orders/overview ; F7 https://www.mercadopago.com.br/developers/pt/docs/checkout-pro-preferences/payment-notifications ; F8 https://www.correios.com.br/atendimento/developers/manuais/manual-api-preco-1 ; F9 https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2013/decreto/d7962.htm ; F10 https://www.gov.br/anpd/pt-br/centrais-de-conteudo/materiais-educativos-e-publicacoes/guia-orientativo-sobre-seguranca-da-informacao-para-agentes-de-tratamento-de-pequeno-porte ; F11 https://developers.google.com/search/docs/appearance/structured-data/product?hl=pt-br .
 
 **Gate final:** esta V3 é consolidação técnica **não é autorização de produção, não aprova tecnologia definitiva e não altera o design.**
+
+---
+
+# REVISÃO INCREMENTAL PÓS-M2b / M2c — 21/10/2026
+**Controle:** anexo acrescido sem substituir as seções 01–17 ou o Plano V3 original de 20/10. Origem: [M2B_VALIDACAO_TRANSACIONAL.md](M2B_VALIDACAO_TRANSACIONAL.md) e [M2C_PAGAMENTOS_FRETE_PLATAFORMAS.md](M2C_PAGAMENTOS_FRETE_PLATAFORMAS.md). PR #3 permanece base de evidências, intacto.
+
+## 18. Conclusões transacionais auditáveis
+M2b executou três rodadas Store API com **duas sessões independentes (Cart Token)** competindo por uma única peça fictícia. Em cada rodada: um checkout HTTP 200 / `on-hold`, outro HTTP 403 com `woocommerce_product_not_enough_stock`, estoque real 1→0 e nunca negativo. O estado `checkout-draft` do segundo comprador **não constitui segunda venda**. Todos os resultados foram confrontados com ordens e estoque via WP-CLI/WooCommerce real.
+
+Depois, pedido `on-hold` foi cancelado por transição nativa: estoque 0→1. Novo comprador finalizou uma encomenda `on-hold`; checkout com `expected_total=1` recebeu HTTP 409, enquanto o preço correto de 14990 centavos foi aceito. O cancelamento subsequente retornou a unidade ao estoque. Esse ciclo passou nas três rodadas. Evidência: [Actions 39701256935](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39701256935). Outro run de disputa inicial: [39700976006](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39700976006).
+
+**Resolução do apontamento M2-03:** a M2 tinha observado estoque não reposto após redução de estoque **manual** seguida de cancelamento. Na M2b, a transição **nativa** de `on-hold` para `cancelled` recompôs o estoque em todas as rodadas (inclusive após recompra). Isso não demonstra que todas as variações futuras de fluxo financeiro terão o mesmo comportamento; reserva, expiração automática e pagamento atrasado continuam não executados.
+
+**Sem pagamentos reais:** BACS foi usado exclusivamente como método offline de laboratório. `payment_status=success` no retorno da Store API representa o êxito do processamento deste meio offline; `on-hold` exige confirmação humana da transferência, não equivale a Pix aprovado.
+
+## 19. Alteração de maturidade e arquitetura
+A topologia candidata permanece:
+- Astro = interface pública, componentes e layout V2/VIS, sem alterações criativas.
+- Sanity = metadados editoriais aprovados; `productId` identifica SKU; produção intocada.
+- WooCommerce = candidato de preço, estoque e pedidos; Store API comprovada **parcialmente** para BACS local.
+- BFF = futura camada segura para autenticação, validação de valores, cotação de frete, erros e segredos; **ainda não implementada/homologada**.
+- Nuvemshop = candidata não testada em conta real; sua ausência não constitui reprovação.
+
+A confiança na hipótese de **proteção de SKU1 no WooCommerce configurado em laboratório** passou de baixa-moderada (M2) a **moderada** (M2b). A confiança na **escolha da plataforma final** continua **insuficiente**, dado o pagamento/frete não homologados, custo de manutenção e operação por Marina não testados.
+
+**Contratos observados:** estoque `1→0`, não-negatividade, uma única encomenda ativa, rejeição HTTP 403 ao comprador concorrente, preço validado no backend através de `expected_total` com rejeição HTTP 409, recomposição de unidade com cancelamento nativo e recompra posterior. **Ainda não observados:** ordens com Pix pendente, assinatura de webhook, sincronização live Sanity→Woo, retenção por expiração, preço recalculado após atualização simultânea e Correios.
+
+## 20. Finanças, frete e Nuvemshop — continuidade M2c
+**Pagamentos B (gate): BLOQUEADO.** Necessária conta sandbox autorizada, API e integração de gateway Pix/cartão, webhook autenticado, persistência idempotente, notificação duplicada/fora de ordem e conciliação tardia.
+**Correios C (gate): BLOQUEADO.** Necessária opção contratada/integrador autorizado, peso e dimensões embaladas, cálculo e erro de cotação, CEP fictício, seguro/avaria e rastreio real.
+**Nuvemshop:** documentação oficial confirma catálogo, estoque e operação comercial; **não se testou** headless com Astro/Sanity, checkout e consistência visual. Comparação assimétrica não permite vencedor.
+**Custos estimados apenas de mensalidades públicas Nuvemshop (21/10/2026):** Essencial R$69/mês → R$828 em 12 meses/R$1.656 em 24; Impulso R$164/mês → R$1.968 em 12/R$3.936 em 24. Descontos no anual, tarifas de transação, app, serviços, domínio, operação e implantação não inclusos. WooCommerce não tem cotação suficiente: TCO depende de hosting PHP/DB, BFF, manutenção, backups, ferramentas, taxa de gateway e suporte. Não afirmar custo zero.
+**Decisão:** plataforma final, contratos e despesas continuam com Marina/Math Brands, sem contratação.
+
+## 21. Gates atualizados para M3, M4 e M5
+| Marco | Entrada mínima | Situação |
+|---|---|---|
+| M3 UI e catálogo | Pranchas VIS, assets oficiais, conteúdo confirmado; preservar header/footer e 9 peças | **A preparar;** V2 permanece fonte de verdade. |
+| M4 motor comercial | Gate A demonstrado no laboratório; definir provedor, integração e revalidar estoque sob gateway; BFF seguro | **PARCIAL/BLOQUEADO** por gateway e plataforma. |
+| M5 homologação | Sandbox Pix/cartão, frete, timeout/expiração, reversões, autenticação webhooks, Sanity→Woo, auditoria WCAG/QA | **BLOQUEADO** até contratos e contas autorizados. |
+| M6 produção | Aceite Matheus/Marina, custo/contrato, domínio/HTTPS, backup testado, políticas e autorização expressa | **NÃO AUTORIZADO**. |
+
+## 22. Pendências novas e responsáveis
+| Prioridade | Pendência | Responsável | Evidência necessária |
+|---|---|---|---|
+| P0 | Pagamento Pix/cartão sandbox, expiração, confirmação tardia | Engenharia + Marina/fornecedor | Eventos assinados, idempotência e pedidos conciliados |
+| P0 | Correios: cotação, erro/timeout e embalagens reais | Marina + Engenharia | Respostas autênticas e bloqueios em caso de falha |
+| P0 | Mecanismo de reserva por tempo (pending/draft e WP-Cron) | Engenharia + QA | Teste de cron/retenção em Woo real |
+| P1 | Validar painel Sanity e Woo para cadastrar drop e administrar pedido | Marina + UX/Engenharia | Tarefas reais de uso em ambiente de teste |
+| P1 | Avaliar Nuvemshop com requisitos equivalentes | Eng./Comercial | Ensaio de design, SKU único, checkout e custo 12/24m |
+| P1 | Congelar versões Docker/plugin e automatizar regressão | DevOps | Versões identificadas, CI repetível |
+| P1 | Revisão visual checkout/carrinho/estados adicionais | Matheus | Pranchas complementares/aceite |
+| P2 | Otimizações extras e monitoramento ampliado | Engenharia | Pós-validação de riscos P0/P1 |
+
+## 23. Registro incremental de alterações
+- Seções 01–17 da V3 pós-M2 preservadas integralmente.
+- Acréscimo 18: resultados reais de checkout HTTP, cancelamento, recompra e valor falsificado, com limites claros.
+- Acréscimo 19: confiança arquitetural ajustada e contratos comprovados versus pendentes.
+- Acréscimo 20: continuidade M2c, fornecedores e custo temporal, sem decisão de plataforma.
+- Acréscimo 21: atualização dos critérios de entrada dos marcos M3–M5 sem publicação.
+- Acréscimo 22: matriz de responsabilidades e pendências P0/P1.
+- Os PRs #1, #2 e #3, o Plano V3 original e o Sanity de produção foram preservados, assim como `main` e `gh-pages`.
+
+**STATUS DA V3:** rascunho técnico consolidado pós-M2b; NÃO é autorização de merge, pagamento ou publicação.
