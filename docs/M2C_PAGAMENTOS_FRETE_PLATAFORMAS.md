@@ -12,7 +12,7 @@ Verificação documental atual das alternativas de comércio, pagamentos e frete
 | Aprovação, recusa, expiração financeira | **BLOQUEADO** | BACS offline fictício não processa pagamentos reais. |
 | Webhook assinado e persistente | **BLOQUEADO** | Contrato do gateway e endpoint de teste ausentes. |
 | Duplicatas, reordenação, reembolso, late payment | **NÃO EXECUTADO** | M2 testa exclusivamente reducer mock em memória; não há prova com rede/assinatura. |
-| Checkout com boleto/transferência fictícia BACS | **M2b em testes** | Permite observar pedidos on-hold; não representa pagamento confirmado. |
+| Transferência offline fictícia BACS | **PASSOU, COM LIMITAÇÕES** | Checkout real Store API com on-hold, recusa de segundo comprador 403 e cancelamento/recompra; **não é pagamento confirmado**. [Evidência](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39701256935). |
 
 **Contrato necessário:** no servidor, validar ID de pedido, valor em centavos, moeda BRL, autenticidade/assinatura, idempotência durável, reconciliação do status de estoque e política para pagamento após cancelamento/expiração. Não aceitar retorno do navegador como evidência de quitação. Provedor comercial deve pertencer à Marina, sujeito à contratação.
 
@@ -59,7 +59,7 @@ Tabela pública Nuvemshop consultada em 21/10/2026, preços mensais anunciados:
 - Sanity: plano, cotas e custo de integração das duas alternativas pendem de verificação com a titularidade do projeto. Não alterar produção.
 
 ## 6. Próxima ação comercial/engenharia
-1. Concluir M2b e registrar sucesso/falha com evidência HTTP e estados persistidos.
+1. M2b concluída no cenário offline: três disputas de estoque 1 sem venda dupla, 409 para preço adulterado e reposição após cancelamento. Revalidar sob gateway efetivo e expiração.
 2. Solicitar autorização para sandbox de um gateway e integrador de frete, sem credenciais no GitHub.
 3. Testar Nuvemshop com requisitos idênticos e custo de operação avaliado pela Marina.
 4. Avaliar viabilidade de preservação da V2 e do Studio existente em cada alternativa, sem escolha antecipada.
