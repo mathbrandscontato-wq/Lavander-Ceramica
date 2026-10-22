@@ -277,3 +277,20 @@ Depois que reserva expira, pedido pode permanecer pendente até executar handler
 | P1 | Checkout/carrinho e responsividade VIS | Direção criativa+QA | Aceite visual registrado |
 
 **Não houve alteração em main, gh-pages, Sanity de produção ou site oficial. A V3 continua sem autorização de merge/deploy.**
+
+---
+
+# ADITIVO M2e — WP-CRON HTTP (22/10/2026)
+**Rastreabilidade:** [M2E_AUDITORIA_WP_CRON.md](M2E_AUDITORIA_WP_CRON.md), workflows [39864739239](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39864739239), [39865109396](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39865109396) e [39865516385](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39865516385). Preserva V3 original e seções anteriores.
+
+## 31. Conclusão nova — agendamento ainda não confiável
+Evento `woocommerce_cancel_unpaid_orders` registrado via `wp_schedule_single_event` para 75 s futuros; após 79 s reais, evento permaneceu na fila e o pedido antigo continuou `pending`, mesmo recebendo requisição ao `wp-cron.php` no ambiente descartável. Terceira tentativa demonstrou lock presente antes da chamada, mas sua limpeza no laboratório não resolveu; causa definitiva não isolada.
+- **Status agendamento HTTP: FALHOU.** Não é possível afirmar defeito do WooCommerce; o laboratório pode ter configurado a entrega incorretamente.
+- **Status handler nativo M2d: PASSOU**, porém acionado de forma explícita no WP-CLI. Os dois resultados não se contradizem.
+- **Status Action Scheduler / execução autônoma em hospedagem real: NÃO EXECUTADO**.
+- **Status pagamento tardio e estoque sob gateway real: BLOQUEADO**.
+
+## 32. Novo gate P0
+Antes da homologação comercial, exigir prova de scheduler funcional com logs, monitoramento e rotina de host compatível. Verificar lock, callbacks, entregas WP-Cron/Action Scheduler, tempo efetivo e recuperação de fila atrasada. Sem escolher hospedagem antes da comparação Woo/Nuvemshop e disponibilidade real do servidor. Se scheduler falhar, o pagamento tardio aumenta risco operacional; não autorizar produção.
+
+**Arquivos acrescentados:** `tests/m2e`, workflow, auditoria M2e, checklist sandboxes e checkpoint. **Nenhum merge, deploy, contratação ou modificação em Sanity/produção.**

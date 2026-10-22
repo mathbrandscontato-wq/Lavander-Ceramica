@@ -1,0 +1,100 @@
+name: M2e WP-Cron HTTP no Woo efêmero (SEM DEPLOY)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/m2e-wp-cron-delivery
+    paths:
+      - '.github/workflows/m2e-wp-cron.yml'
+permissions:
+  contents: read
+concurrency:
+  group: m2e-wp-cron
+  cancel-in-progress: true
+jobs:
+  cron-http:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Credenciais temporarias exclusivas do runner
+        shell: bash
+        run: |
+          for key in M2_DB_ROOT_PASSWORD M2_DB_PASSWORD M2_WP_ADMIN_PASSWORD; do
+            value="$(openssl rand -hex 24)"
+            echo "::add-mask::$value"
+            echo "$key=$value" >> "$GITHUB_ENV"
+          done
+      - name: Subir WordPress e MariaDB no localhost
+        run: docker compose -f tests/m2e/compose.yaml up -d
+      - name: Aguardar volume e WP-CLI
+        run: |
+          for i in $(seq 1 45); do
+            if docker compose -f tests/m2e/compose.yaml exec -T cli wp --info >/dev/null 2>&1 &&
+               docker compose -f tests/m2e/compose.yaml exec -T cli test -f /var/www/html/wp-config.php; then exit 0; fi
+            sleep 3
+          done
+          exit 1
+      - name: Instalar WooCommerce local descartavel
+        shell: bash
+        run: |
+          DC="docker compose -f tests/m2e/compose.yaml"
+          $DC exec -T -u root wordpress sh -c 'mkdir -p /var/www/html/wp-content/plugins /var/www/html/wp-content/upgrade /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content'
+          $DC exec -T cli wp core install --url=http://127.0.0.1:8090 --title=M2E-LAB \
+            --admin_user=m2e-test --admin_password="$M2_WP_ADMIN_PASSWORD" \
+            --admin_email=m2e@example.invalid --skip-email
+          $DC exec -T -u root cli wp plugin install woocommerce --activate --allow-root
+          $DC exec -T cli wp option update woocommerce_manage_stock yes
+          $DC exec -T cli wp option update woocommerce_hold_stock_minutes 1
+      - name: Criar pedido e agendar evento WordPress via API wp_schedule_single_event
+        shell: bash
+        run: |
+          set -o pipefail
+          docker compose -f tests/m2e/compose.yaml exec -T cli wp eval-file /m2e/setup-cron.php | tee m2e-setup.log
+          grep -q '"status":"READY"' m2e-setup.log
+      - name: Aguardar prazo real para agendamento sem disparar hook manual
+        run: sleep 79
+      - name: Criar controles recentes e administrativos
+        shell: bash
+        run: |
+          set -o pipefail
+          docker compose -f tests/m2e/compose.yaml exec -T cli wp eval-file /m2e/setup-controls.php | tee m2e-controls.log
+          grep -q '"status":"READY"' m2e-controls.log
+      - name: Diagnosticar e liberar lock WP-Cron SOMENTE no banco descartavel
+        shell: bash
+        run: |
+          DC="docker compose -f tests/m2e/compose.yaml"
+          echo "eventos antes de chamar wp-cron.php"
+          $DC exec -T cli wp cron event list --fields=hook,next_run_gmt --format=table | grep -E 'woocommerce_cancel_unpaid_orders|hook' || true
+          echo "WP-Cron lock antes"
+          $DC exec -T cli wp transient get doing_cron || true
+          # No laboratório isolado, limpamos o lock que pode ter sido estabelecido por loops HTTP da própria instalação.
+          # A produção PRECISA de configuração e observabilidade próprias; isso não é validação de cron autônomo.
+          $DC exec -T cli wp transient delete doing_cron || true
+      - name: Entregar evento via endpoint HTTP wp-cron.php
+        shell: bash
+        run: |
+          curl -fsS --max-time 30 -H 'Cache-Control: no-cache' \
+            "http://127.0.0.1:8090/wp-cron.php" -o m2e-cron-response.txt
+          echo "eventos apos chamar wp-cron.php"
+          docker compose -f tests/m2e/compose.yaml exec -T cli wp cron event list --fields=hook,next_run_gmt --format=table | grep -E 'woocommerce_cancel_unpaid_orders|hook' || true
+      - name: Verificar transicoes usando WooCommerce real
+        shell: bash
+        run: |
+          set -o pipefail
+          docker compose -f tests/m2e/compose.yaml exec -T cli wp eval-file /m2e/verify-cron.php | tee m2e-verification.log
+          grep -q '"status": "PASSOU"' m2e-verification.log
+      - name: Publicar somente log sanitizado e efemero
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2e-http-wp-cron-evidence
+          path: |
+            m2e-setup.log
+            m2e-controls.log
+            m2e-verification.log
+          retention-days: 5
+          if-no-files-found: ignore
+      - name: Destruir banco e containers
+        if: always()
+        run: docker compose -f tests/m2e/compose.yaml down -v --remove-orphans || true
