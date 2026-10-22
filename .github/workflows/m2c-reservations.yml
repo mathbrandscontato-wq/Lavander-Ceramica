@@ -1,0 +1,66 @@
+name: M2c expiração real de reserva (sem deploy)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/m2c-stock-reservation-expiry
+    paths:
+      - .github/workflows/m2c-reservations.yml
+permissions:
+  contents: read
+concurrency:
+  group: m2c-reservations
+  cancel-in-progress: true
+jobs:
+  woo-native-hold:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Credenciais apenas efêmeras do runner
+        shell: bash
+        run: |
+          for key in M2_DB_ROOT_PASSWORD M2_DB_PASSWORD M2_WP_ADMIN_PASSWORD; do
+            value="$(openssl rand -hex 24)"
+            echo "::add-mask::$value"
+            echo "$key=$value" >> "$GITHUB_ENV"
+          done
+      - name: Banco e WordPress no loopback
+        run: docker compose -f tests/m2c/compose.yaml up -d
+      - name: Aguardar setup do WordPress
+        run: |
+          for i in $(seq 1 45); do
+            if docker compose -f tests/m2c/compose.yaml exec -T cli wp --info >/dev/null 2>&1 &&
+               docker compose -f tests/m2c/compose.yaml exec -T cli test -f /var/www/html/wp-config.php; then exit 0; fi
+            sleep 3
+          done
+          echo "WP_STARTUP_FAILED"; exit 1
+      - name: Instalar apenas WooCommerce efêmero
+        run: |
+          DC="docker compose -f tests/m2c/compose.yaml"
+          $DC exec -T -u root wordpress sh -c 'mkdir -p /var/www/html/wp-content/plugins /var/www/html/wp-content/upgrade /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content'
+          $DC exec -T cli wp core install --url=http://127.0.0.1:8090 --title=M2C-LAB \
+            --admin_user=m2c-lab --admin_password="$M2_WP_ADMIN_PASSWORD" \
+            --admin_email=m2c@example.invalid --skip-email
+          $DC exec -T -u root cli wp plugin install woocommerce --activate --allow-root
+          $DC exec -T cli wp option update woocommerce_manage_stock yes
+          $DC exec -T cli wp option update woocommerce_hold_stock_minutes 1
+          $DC exec -T cli wp plugin list --field=name | grep -qx woocommerce
+      - name: Reservar, rejeitar segunda reserva, cancelar, expirar e liberar
+        shell: bash
+        run: |
+          set -o pipefail
+          docker compose -f tests/m2c/compose.yaml exec -T cli wp eval-file /m2c/reservation-expiry.php | tee m2c-reservation-evidence.log
+          grep -q '"status": "PASSOU"' m2c-reservation-evidence.log
+          grep -q '"held_after_real_clock_expiry": 0' m2c-reservation-evidence.log
+      - name: Evidências sanitizadas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2c-woo-reservations
+          path: m2c-reservation-evidence.log
+          retention-days: 5
+          if-no-files-found: ignore
+      - name: Destruir banco e volumes
+        if: always()
+        run: docker compose -f tests/m2c/compose.yaml down -v --remove-orphans || true

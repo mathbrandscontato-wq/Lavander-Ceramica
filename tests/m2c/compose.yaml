@@ -1,0 +1,42 @@
+# M2c efêmero: mesma topologia da M2, fixture HTTP separada e sem dados de produção.
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: ${M2_DB_ROOT_PASSWORD:?}
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: ${M2_DB_PASSWORD:?}
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 --silent"]
+      interval: 5s
+      retries: 24
+  wordpress:
+    image: wordpress:php8.3-apache
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${M2_DB_PASSWORD:?}
+      WORDPRESS_DB_NAME: wordpress
+    ports:
+      - "127.0.0.1:8090:80"
+    volumes:
+      - wpdata:/var/www/html
+  cli:
+    image: wordpress:cli-php8.3
+    entrypoint: ["sh", "-c", "sleep infinity"]
+    depends_on:
+      - wordpress
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${M2_DB_PASSWORD:?}
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wpdata:/var/www/html
+      - ./:/m2c:ro
+volumes:
+  wpdata:
