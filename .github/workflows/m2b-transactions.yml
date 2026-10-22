@@ -7,6 +7,7 @@ on:
     paths:
       - .github/workflows/m2b-transactions.yml
       - tests/m2b/store-api-race.mjs
+      - tests/m2b/after-cancel.mjs
 permissions:
   contents: read
 concurrency:
@@ -81,6 +82,12 @@ jobs:
               failed=1
             fi
             if ! docker compose -f tests/m2b/compose.yaml exec -T -e M2B_ROUND="$round" cli wp eval-file /m2b/verify-orders.php | tee "m2b-evidence/orders-$round.json"; then
+              failed=1
+            fi
+            if ! node tests/m2b/after-cancel.mjs "$id" "$round" | tee "m2b-evidence/post-cancel-$round.json"; then
+              failed=1
+            fi
+            if ! docker compose -f tests/m2b/compose.yaml exec -T -e M2B_ROUND="$round" cli wp eval-file /m2b/verify-orders.php | tee "m2b-evidence/rebuy-orders-$round.json"; then
               failed=1
             fi
           done
