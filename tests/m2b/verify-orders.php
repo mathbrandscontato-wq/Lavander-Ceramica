@@ -16,8 +16,7 @@ foreach(wc_get_orders(['limit'=>-1,'orderby'=>'ID','order'=>'ASC']) as $order) {
  foreach($order->get_items() as $item){
   if((int)$item->get_product_id()!==$id) continue;
   $record=['id'=>$order->get_id(),'status'=>$order->get_status(),
-           'qty'=>$item->get_quantity(),'total'=>(string)$order->get_total(),
-           'stock_reduced'=>(bool)$order->get_data_store()->get_recorded_sales($order)]; // may not exist?
+           'qty'=>$item->get_quantity(),'total'=>(string)$order->get_total()];
   $all[]=$record;
   if(in_array($order->get_status(),$valid,true))$claims[]=$order;
  }
