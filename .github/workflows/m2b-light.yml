@@ -1,0 +1,36 @@
+name: M2b CI leve (sem deploy)
+on:
+  push:
+    branches:
+      - experiment/m2b-transactional-validation
+    paths:
+      - src/lib/commerce/**
+      - tests/m2b/**
+      - .github/workflows/m2b-light.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m2b-light
+  cancel-in-progress: true
+jobs:
+  static-and-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testes de contratos existentes
+        run: npm test
+      - name: Sintaxe JS e PHP dos fixtures M2b
+        run: |
+          node --check tests/m2b/store-api-race.mjs
+          node --check tests/m2b/after-cancel.mjs
+          php -l tests/m2b/setup-lab.php
+          php -l tests/m2b/verify-orders.php
+      - name: Astro build somente verificacao
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
