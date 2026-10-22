@@ -6,14 +6,15 @@
 const [,,productRaw,round='1']=process.argv;
 const productId=Number(productRaw),root=process.env.M2B_BASE_URL||'http://127.0.0.1:8090';
 if(!Number.isInteger(productId)||productId<1)throw Error('ID_DE_PRODUTO_INVALIDO');
-const endpoint=root+'/wp-json/wc/store/v1';
+// WordPress efemero em plain permalinks: ?rest_route evita resposta HTML 200 da homepage.
+const endpoint=root+'/?rest_route=';
 async function request(method,path,session,body){
   const headers={'Accept':'application/json'};
   if(body!==undefined)headers['Content-Type']='application/json';
   if(session.token)headers['Cart-Token']=session.token;
   else if(session.nonce)headers['Nonce']=session.nonce;
   if(session.cookie)headers['Cookie']=session.cookie;
-  const response=await fetch(endpoint+path,{method,headers,body:body!==undefined?JSON.stringify(body):undefined,signal:AbortSignal.timeout(15000)});
+  const response=await fetch(endpoint+encodeURIComponent('/wc/store/v1'+path),{method,headers,body:body!==undefined?JSON.stringify(body):undefined,signal:AbortSignal.timeout(15000)});
   const newToken=response.headers.get('Cart-Token');
   if(newToken)session.token=newToken;
   const newNonce=response.headers.get('Nonce');
@@ -24,7 +25,9 @@ async function request(method,path,session,body){
     for(const raw of rawCookies){const part=raw.split(';')[0],i=part.indexOf('=');if(i>0)jar.set(part.slice(0,i),part.slice(i+1));}
     session.cookie=[...jar].map(([a,b])=>a+'='+b).join('; ');
   }
-  let payload;try{payload=await response.json()}catch{payload={}};
+  const contentType=response.headers.get('content-type')||'';
+  if(!contentType.includes('json'))throw Error('STORE_API_NOT_JSON_'+response.status+'_'+contentType);
+  let payload;try{payload=await response.json()}catch{throw Error('STORE_API_BAD_JSON_'+response.status);}
   return {http:response.status,body:payload};
 }
 const address=(who)=>({first_name:'Cliente',last_name:who,company:'',address_1:'Rua Exemplo, 1',
