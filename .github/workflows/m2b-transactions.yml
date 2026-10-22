@@ -48,6 +48,10 @@ jobs:
             --admin_email=m2@example.invalid --skip-email
           $DC exec -T -u root cli wp plugin install woocommerce --activate --allow-root
           $DC exec -T cli wp option update woocommerce_manage_stock yes
+          nonce="$($DC exec -T cli wp eval 'echo wp_create_nonce("wc_store_api");')"
+          if [ -z "$nonce" ]; then echo "Nonce de laboratorio indisponivel"; exit 1; fi
+          echo "::add-mask::$nonce"
+          echo "M2B_GUEST_NONCE=$nonce" >> "$GITHUB_ENV"
           for i in $(seq 1 30); do
             if curl -fsS http://127.0.0.1:8090/wp-json/wc/store/v1/cart > /dev/null; then exit 0; fi
             sleep 2
