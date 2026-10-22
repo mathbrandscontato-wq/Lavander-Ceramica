@@ -60,11 +60,24 @@ jobs:
           set -o pipefail
           docker compose -f tests/m2e/compose.yaml exec -T cli wp eval-file /m2e/setup-controls.php | tee m2e-controls.log
           grep -q '"status":"READY"' m2e-controls.log
+      - name: Diagnosticar e liberar lock WP-Cron SOMENTE no banco descartavel
+        shell: bash
+        run: |
+          DC="docker compose -f tests/m2e/compose.yaml"
+          echo "eventos antes de chamar wp-cron.php"
+          $DC exec -T cli wp cron event list --fields=hook,next_run_gmt --format=table | grep -E 'woocommerce_cancel_unpaid_orders|hook' || true
+          echo "WP-Cron lock antes"
+          $DC exec -T cli wp transient get doing_cron || true
+          # No laboratório isolado, limpamos o lock que pode ter sido estabelecido por loops HTTP da própria instalação.
+          # A produção PRECISA de configuração e observabilidade próprias; isso não é validação de cron autônomo.
+          $DC exec -T cli wp transient delete doing_cron || true
       - name: Entregar evento via endpoint HTTP wp-cron.php
         shell: bash
         run: |
           curl -fsS --max-time 30 -H 'Cache-Control: no-cache' \
             "http://127.0.0.1:8090/wp-cron.php" -o m2e-cron-response.txt
+          echo "eventos apos chamar wp-cron.php"
+          docker compose -f tests/m2e/compose.yaml exec -T cli wp cron event list --fields=hook,next_run_gmt --format=table | grep -E 'woocommerce_cancel_unpaid_orders|hook' || true
       - name: Verificar transicoes usando WooCommerce real
         shell: bash
         run: |
