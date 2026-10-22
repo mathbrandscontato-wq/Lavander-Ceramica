@@ -12,9 +12,12 @@ $gateways = WC()->payment_gateways()->payment_gateways();
 if (!isset($gateways['bacs'])) { fwrite(STDERR,"BACS_UNAVAILABLE\n"); exit(3); }
 $gateways['bacs']->update_option('enabled','yes');
 $gateways['bacs']->update_option('title','LABORATORIO - transferencia ficticia');
+$round = (int) (getenv('M2B_ROUND') ?: 1);
+if ($round < 1 || $round > 8) { fwrite(STDERR,'BAD_ROUND');exit(4); }
+$testSku = 'M2B-UNICO-' . str_pad((string)$round,3,'0',STR_PAD_LEFT);
 $p=new WC_Product_Simple();
 $p->set_name('Peça Única Fictícia M2b - TESTE');
-$p->set_sku('M2B-UNICO-001');
+$p->set_sku($testSku);
 $p->set_status('publish');
 $p->set_catalog_visibility('visible');
 $p->set_regular_price('149.90');
@@ -26,4 +29,4 @@ $p->set_backorders('no');
 $p->set_sold_individually(true);
 $id=$p->save();
 if(!$id){fwrite(STDERR,"PRODUCT_CREATE_FAILED\n");exit(4);}
-echo json_encode(['product_id'=>$id,'sku'=>'M2B-UNICO-001','stock'=>1,'gateway'=>'bacs']) . "\n";
+echo json_encode(['product_id'=>$id,'sku'=>$testSku,'stock'=>1,'gateway'=>'bacs']) . "\n";
