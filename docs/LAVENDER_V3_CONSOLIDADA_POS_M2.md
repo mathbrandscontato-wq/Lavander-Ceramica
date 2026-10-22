@@ -227,3 +227,29 @@ A confiança na hipótese de **proteção de SKU1 no WooCommerce configurado em 
 - Os PRs #1, #2 e #3, o Plano V3 original e o Sanity de produção foram preservados, assim como `main` e `gh-pages`.
 
 **STATUS DA V3:** rascunho técnico consolidado pós-M2b; NÃO é autorização de merge, pagamento ou publicação.
+
+---
+
+# REVISÃO INCREMENTAL PÓS-M2c — 22/10/2026
+**Documentos-base:** [M2C_RESERVAS_E_EXPIRACAO.md](M2C_RESERVAS_E_EXPIRACAO.md), [M2C_PAGAMENTOS_FRETE_PLATAFORMAS.md](M2C_PAGAMENTOS_FRETE_PLATAFORMAS.md). Não substituir a V3 original de 20/10, seções 01–23, PRs #1–#4 ou identidade visual VIS.
+
+## 24. Evidência nova de reserva e expiração
+WooCommerce real efêmero com SKU1, `pending`, prazo de 1 minuto. Primeira reserva held=1/estoque físico=1; segunda bloqueada; cancelamento libera; duplicata idempotente; após 67 segundos reais o hold expirou; outro pedido reservou a mesma unidade; cancelamento do anterior não liberou novo hold; final held=0/estoque=1. [Workflow aprovado](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39860801388).
+
+**Risco P0:** pedido antigo permaneceu `pending` após a reserva expirar. Não foi executado WP-Cron de cancelamento nem webhook bancário tardio. Política de conciliação de pagamento/estoque deve ser testada e documentada. Não inferir overselling ou homologação financeira a partir de um hold.
+
+## 25. Gates de continuidade
+| Gate | Status | Próxima evidência |
+|---|---|---|
+| A: estoque1/hold | PASSOU somente em laboratório M2b/M2c | Regressão sob gateway final, escala e timeout |
+| B: Pix/cartão e webhooks | BLOQUEADO | Sandbox com credenciais autorizadas, idempotência, pagamento tardio |
+| C: frete Correios | BLOQUEADO | Cotação autêntica, origem, embalagens, falhas |
+| D: Marina administrar drops/pedidos | NÃO EXECUTADO | Roteiro de tarefas em sistema comercial de teste |
+| E: checkout e carrinho VIS | PENDENTE | Design aprovado expressamente |
+| F: domínio/HTTPS/produção | NÃO AUTORIZADO | Contrato, backup, QA, liberação expressa |
+
+## 26. Plataforma e custo
+Comparação documental Nuvemshop atualizada em 22/10, com SKU/estoque API, temas Twig, NubeSDK e preços mensais anunciados de R$69 Essencial e R$164 Impulso. Custos nominais de assinatura 12/24 meses na revisão M2c, não incluem integração/serviços/taxas. WooCommerce requer orçamento de manutenção PHP/DB/BFF, backups e integrações. **Não há plataforma definitivamente aprovada.**
+
+## 27. Histórico
+Nova branch M2c acrescentou APENAS ensaio isolado, CI experimental, documentação de reserva e aditivos; o site, layouts, Sanity production, main, gh-pages e PRs anteriores permaneceram preservados. **Documento técnico não autoriza merge, contratação ou publicação.**
