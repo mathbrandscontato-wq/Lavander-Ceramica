@@ -6,6 +6,7 @@ on:
       - experiment/m2b-transactional-validation
     paths:
       - .github/workflows/m2b-transactions.yml
+      - tests/m2b/store-api-race.mjs
 permissions:
   contents: read
 concurrency:
