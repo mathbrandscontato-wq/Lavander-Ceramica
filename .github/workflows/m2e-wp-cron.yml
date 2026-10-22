@@ -64,7 +64,7 @@ jobs:
         shell: bash
         run: |
           curl -fsS --max-time 30 -H 'Cache-Control: no-cache' \
-            "http://127.0.0.1:8090/wp-cron.php?doing_wp_cron=$(date +%s)" -o m2e-cron-response.txt
+            "http://127.0.0.1:8090/wp-cron.php" -o m2e-cron-response.txt
       - name: Verificar transicoes usando WooCommerce real
         shell: bash
         run: |
