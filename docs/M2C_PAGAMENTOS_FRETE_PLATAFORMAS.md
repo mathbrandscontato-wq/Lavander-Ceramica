@@ -66,3 +66,38 @@ Tabela pública Nuvemshop consultada em 21/10/2026, preços mensais anunciados:
 5. Formalizar contrato e orçamento antes de despesas e produção.
 
 **Conclusão M2c:** a escolha da plataforma permanece **EM ABERTO**; pagamentos e frete estão **BLOQUEADOS** para homologação comercial.
+
+---
+
+## 7. Revisão M2c — verificação documental de 22/10/2026
+**Fontes externas verificadas em 22/10/2026; não representam operação testada.** A comparação anterior permanece como registro histórico. Esta revisão separa hipóteses de fatos documentados.
+
+| Propriedade | WooCommerce + Astro + Sanity | Nuvemshop |
+|---|---|---|
+| SKU e estoque | Store API em Woo real demonstrou SKU1/concorrência nos 3 ensaios M2b; mais testes de reserva M2c nesta branch | API documenta SKU e gestão direta de estoque, inclusive variantes. **Sem prova de concorrência/checkout Nuvemshop** |
+| Fluxo editorial | Studio Sanity pode ser mantido; necessária conciliação segura com Woo | API permite integrar Sanity, mas operação dupla ou substituição editorial exige decisão, **não comprovada** |
+| Personalização VIS | Astro já dispõe de estrutura preservável | Temas Twig e componentes via NubeSDK, mas fidelidade às pranchas e transição para checkout hospedado ainda **não comprovadas** |
+| Checkout e extensão | Extensão da Store API/checkout Woo fica sob manutenção da agência | A documentação NubeSDK delimita componentes de checkout; formulário sensível do pagamento é isolado e não suporta o SDK |
+| Operação Marina | Dois sistemas editorial e comercial exigem treinamento, suporte, atualização PHP e backups | Plataforma gerencia mais operações comerciais, mas integração CMS externo continua um fator |
+| Pagamento e frete | Gateway e Correios dependem de serviços e testes próprios | Nuvem Pago e Nuvem Envio existem; elegibilidade e contrato da Marina não demonstrados |
+| Evidência comparável | M2b real efêmera PASSOU parcialmente | Pesquisa documental apenas; não reprovar por falta de ambiente |
+| Escolha | **CANDIDATA** | **CANDIDATA** |
+
+### Planos Nuvemshop: projeção nominal, sem taxas variáveis
+Fonte oficial consultada em 22/10/2026: https://www.nuvemshop.com.br/planos-e-precos .
+Preço **mensal** anunciado: Começo gratuito, Essencial R$69, Impulso R$164. Totais somente de assinatura mensal sem mudanças:
+- Essencial: **R$828 (12 meses)** e **R$1.656 (24 meses)**.
+- Impulso: **R$1.968 (12 meses)** e **R$3.936 (24 meses)**.
+- Referência em plano anual com desconto anunciado de 15%: Essencial equivale a R$58,65/mês e Impulso R$139,40/mês; efetivas cobrança e renovação devem ser conferidas.
+- **Excluídos:** gateway e MDR de processamento, tarifas por venda em condições específicas, aplicativos, domínio, integração Astro/Sanity, implantação, suporte de agência, tributos, frete e valores sujeitos a alteração. O plano Começo não implica customização sem restrições.
+- **WooCommerce:** licença-base não substitui custos reais de hosting PHP/MariaDB, BFF, atualização, segurança, backup, servidor SMTP, integração e suporte. Orçamento de 12/24 meses permanece SEM COTAÇÃO, portanto não pode haver comparação de TCO final.
+
+### Restrições atuais Nuvemshop a testar
+- Guia de desenvolvimento: https://nuvemshop.dev/overview ; temas utilizam Twig com seções e blocos, e a API REST dá acesso a produtos/pedidos/webhooks.
+- Produto e variantes (SKU/estoque): https://nuvemshop.dev/apps/erp-guide/catalog/products .
+- NubeSDK (checkout): https://nuvemshop.dev/apps/nube-sdk/api/checkout ; opções de extensão do host NÃO representam liberdade de redesenhar todas as etapas de pagamento.
+- Regras de SDK: https://nuvemshop.dev/apps/admin/overview ; injeções em storefront/checkout exigem SDK nas condições documentadas; pagamento sensível é isolado.
+- Falta validar como uma UI Astro fidelíssima à V2 transfere a compra ao checkout da plataforma, quais páginas podem ser personalizadas e como os pedidos retornam. Esse risco é **aberto**, não prova de incompatibilidade.
+
+### Decisão M2c
+Nenhum provedor foi contratado ou escolhido. Sem credenciais autorizadas de sandbox Pix/cartão e serviço de frete, Gates B/C **BLOQUEADOS**. Não instalar gateways fictícios em produção. Prioridade técnica: expiração real da reserva no Woo (teste na branch), migração de estados de pedido e política de pagamento atrasado; prioridade comercial: cotar as duas alternativas com titularidade Marina e operação de drops.
