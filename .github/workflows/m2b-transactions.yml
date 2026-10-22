@@ -1,0 +1,111 @@
+name: M2b HTTP transacional isolado (SEM DEPLOY)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/m2b-transactional-validation
+    paths:
+      - .github/workflows/m2b-transactions.yml
+      - tests/m2b/store-api-race.mjs
+      - tests/m2b/after-cancel.mjs
+permissions:
+  contents: read
+concurrency:
+  group: m2b-http
+  cancel-in-progress: true
+jobs:
+  m2b-woo-store-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Segredos gerados apenas no runner
+        shell: bash
+        run: |
+          for key in M2_DB_ROOT_PASSWORD M2_DB_PASSWORD M2_WP_ADMIN_PASSWORD; do
+            value="$(openssl rand -hex 24)"
+            echo "::add-mask::$value"
+            echo "$key=$value" >> "$GITHUB_ENV"
+          done
+      - name: Ambiente MariaDB e WordPress sem portas externas
+        run: docker compose -f tests/m2b/compose.yaml up -d
+      - name: Aguardar WordPress e volume
+        run: |
+          for i in $(seq 1 45); do
+            if docker compose -f tests/m2b/compose.yaml exec -T cli wp --info >/dev/null 2>&1 &&
+               docker compose -f tests/m2b/compose.yaml exec -T cli test -f /var/www/html/wp-config.php; then exit 0; fi
+            sleep 3
+          done
+          exit 1
+      - name: Preparar WooCommerce real e metodo offline ficticio
+        shell: bash
+        run: |
+          DC="docker compose -f tests/m2b/compose.yaml"
+          $DC exec -T -u root wordpress sh -c 'mkdir -p /var/www/html/wp-content/plugins /var/www/html/wp-content/upgrade /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content'
+          $DC exec -T cli wp core install --url=http://127.0.0.1:8090 --title=M2B-LAB \
+            --admin_user=m2-lab --admin_password="$M2_WP_ADMIN_PASSWORD" \
+            --admin_email=m2@example.invalid --skip-email
+          $DC exec -T -u root cli wp plugin install woocommerce --activate --allow-root
+          $DC exec -T cli wp option update woocommerce_manage_stock yes
+          nonce="$($DC exec -T cli wp eval 'echo wp_create_nonce("wc_store_api");')"
+          if [ -z "$nonce" ]; then echo "Nonce de laboratorio indisponivel"; exit 1; fi
+          echo "::add-mask::$nonce"
+          echo "M2B_GUEST_NONCE=$nonce" >> "$GITHUB_ENV"
+          for i in $(seq 1 30); do
+            if curl -fsS -H 'Accept: application/json' 'http://127.0.0.1:8090/?rest_route=/wc/store/v1/cart' | head -c 250 | grep -q 'items'; then exit 0; fi
+            sleep 2
+          done
+          echo "Store API nao respondeu"; exit 1
+      - name: Tres rodadas de disputa real por estoque 1
+        shell: bash
+        run: |
+          set -uo pipefail
+          mkdir -p m2b-evidence
+          failed=0
+          for round in 1 2 3; do
+            echo "M2b rodada $round"
+            if ! docker compose -f tests/m2b/compose.yaml exec -T -e M2B_ROUND="$round" cli wp eval-file /m2b/setup-lab.php 2>&1 | tee "m2b-evidence/fixture-$round.txt"; then
+              echo "SETUP_FALHOU" > "m2b-evidence/round-$round.error"
+              failed=1
+              continue
+            fi
+            id="$(tail -n 1 "m2b-evidence/fixture-$round.txt" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(String(JSON.parse(s).product_id))}catch{process.exit(1)}})' || true)"
+            if [ -z "$id" ]; then
+              echo "ID_NAO_RECEBIDO" > "m2b-evidence/round-$round.error"
+              failed=1
+              continue
+            fi
+            if ! node tests/m2b/store-api-race.mjs "$id" "$round" | tee "m2b-evidence/http-$round.json"; then
+              failed=1
+            fi
+            if ! docker compose -f tests/m2b/compose.yaml exec -T -e M2B_ROUND="$round" cli wp eval-file /m2b/verify-orders.php | tee "m2b-evidence/orders-$round.json"; then
+              failed=1
+            fi
+            if ! node tests/m2b/after-cancel.mjs "$id" "$round" | tee "m2b-evidence/post-cancel-$round.json"; then
+              failed=1
+            fi
+            if ! docker compose -f tests/m2b/compose.yaml exec -T -e M2B_ROUND="$round" cli wp eval-file /m2b/verify-orders.php | tee "m2b-evidence/rebuy-orders-$round.json"; then
+              failed=1
+            fi
+          done
+          echo "$failed" > m2b-evidence/failed-count-flag
+          exit "$failed"
+      - name: Sanitizar estado do laboratorio
+        if: always()
+        run: docker compose -f tests/m2b/compose.yaml ps > m2b-compose-status.txt 2>&1 || true
+      - name: Evidencia M2b auditavel, retencao curta
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2b-http-woo-evidence
+          path: |
+            m2b-evidence/
+            m2b-compose-status.txt
+          retention-days: 5
+          if-no-files-found: ignore
+      - name: Destruir instalacoes efemeras e volumes
+        if: always()
+        run: docker compose -f tests/m2b/compose.yaml down -v --remove-orphans || true
