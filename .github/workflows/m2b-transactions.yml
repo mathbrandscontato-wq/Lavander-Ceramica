@@ -44,7 +44,7 @@ jobs:
         run: |
           DC="docker compose -f tests/m2b/compose.yaml"
           $DC exec -T -u root wordpress sh -c 'mkdir -p /var/www/html/wp-content/plugins /var/www/html/wp-content/upgrade /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content'
-          $DC exec -T cli wp core install --url=http://localhost:8090 --title=M2B-LAB \
+          $DC exec -T cli wp core install --url=http://127.0.0.1:8090 --title=M2B-LAB \
             --admin_user=m2-lab --admin_password="$M2_WP_ADMIN_PASSWORD" \
             --admin_email=m2@example.invalid --skip-email
           $DC exec -T -u root cli wp plugin install woocommerce --activate --allow-root
@@ -54,7 +54,7 @@ jobs:
           echo "::add-mask::$nonce"
           echo "M2B_GUEST_NONCE=$nonce" >> "$GITHUB_ENV"
           for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:8090/wp-json/wc/store/v1/cart > /dev/null; then exit 0; fi
+            if curl -fsS -H 'Accept: application/json' 'http://127.0.0.1:8090/?rest_route=/wc/store/v1/cart' | head -c 250 | grep -q 'items'; then exit 0; fi
             sleep 2
           done
           echo "Store API nao respondeu"; exit 1
