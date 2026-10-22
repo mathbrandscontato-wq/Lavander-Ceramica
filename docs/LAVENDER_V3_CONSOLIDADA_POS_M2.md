@@ -253,3 +253,27 @@ Comparação documental Nuvemshop atualizada em 22/10, com SKU/estoque API, tema
 
 ## 27. Histórico
 Nova branch M2c acrescentou APENAS ensaio isolado, CI experimental, documentação de reserva e aditivos; o site, layouts, Sanity production, main, gh-pages e PRs anteriores permaneceram preservados. **Documento técnico não autoriza merge, contratação ou publicação.**
+
+---
+
+# ADITIVO M2d — CANCELAMENTO DE PENDENTES E CONCILIAÇÃO (22/10/2026)
+**V3 original, pranchas VIS e seções 01–27 preservados.** Evidência: [M2D_CANCELAMENTO_E_CONCILIACAO.md](M2D_CANCELAMENTO_E_CONCILIACAO.md) e [Actions 39862947526](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39862947526).
+
+## 28. Prova incremental M2d
+WooCommerce real descartável, handler nativo `wc_cancel_unpaid_orders` acionado explicitamente via WP-CLI. Em 68 segundos reais, pedido fictício `pending` de origem marcada `store-api` foi cancelado e reserva liberada; pedido novo e pedido administrativo foram preservados; novo comprador reservou; segunda chamada não removeu nova reserva. **Não foi executado agendador autônomo nem checkout HTTP originando esse pedido na própria M2d.** M2b e M2c contêm provas anteriores e complementares. A regra de pagamento tardio foi testada como condição fictícia, **não representa webhook real**.
+
+## 29. Política obrigatória de pagamento tardio (P0)
+Depois que reserva expira, pedido pode permanecer pendente até executar handler do WooCommerce. O recebimento de pagamento atrasado deve exigir autenticação de webhook, reconsulta ao gateway, verificação de valores/moeda/titularidade, idempotência persistente e confronto entre status do pedido, unidade em estoque e reservas de outros compradores. Pedido já cancelado ou unidade realocada → **não permitir despacho automático**; conciliar e avaliar reembolso/atendimento. Sem prova Pix/cartão, não declarar fluxo homologado. Se não existir gateway autorizado, manter bloqueio de produção.
+
+## 30. Gates e responsáveis pós-M2d
+| Prioridade | Pendência | Responsável | Comprovação requerida |
+|---|---|---|---|
+| P0 | Gateway autorizado, webhook autenticado e idempotência durável | Engenharia+provedor+Marina | Teste completo sandbox |
+| P0 | Pagamento tardio, duplicata, evento fora de ordem | QA+engenharia | Nunca despachar 2 compradores pela mesma unidade |
+| P0 | Execução real agendada de cancelamento | DevOps+QA | Action Scheduler/WP-Cron dispara sem WP-CLI; logs, restart/retries |
+| P0 | Correios, erro de frete e embalagens | Marina+engenharia | Tarifas, prazos e indisponibilidade do integrador |
+| P1 | Gestão de drops na rotina da Marina | Marina+UX | Tarefas guiadas em ambiente homologado |
+| P1 | Comparação Nuvemshop e TCO real | Engenharia+comercial | Piloto autorizado; 12/24m com cotações |
+| P1 | Checkout/carrinho e responsividade VIS | Direção criativa+QA | Aceite visual registrado |
+
+**Não houve alteração em main, gh-pages, Sanity de produção ou site oficial. A V3 continua sem autorização de merge/deploy.**
