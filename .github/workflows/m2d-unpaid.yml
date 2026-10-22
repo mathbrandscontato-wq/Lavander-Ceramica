@@ -1,0 +1,66 @@
+name: M2d — Cancelamento nativo de pending (SEM DEPLOY)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/m2d-pending-reconciliation
+    paths:
+      - .github/workflows/m2d-unpaid.yml
+permissions:
+  contents: read
+concurrency:
+  group: m2d-unpaid-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  unpaid-woo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Criar apenas segredos efêmeros
+        shell: bash
+        run: |
+          for key in M2_DB_ROOT_PASSWORD M2_DB_PASSWORD M2_WP_ADMIN_PASSWORD; do
+            value="$(openssl rand -hex 24)"
+            echo "::add-mask::$value"
+            echo "$key=$value" >> "$GITHUB_ENV"
+          done
+      - name: Subir banco e WordPress locais
+        run: docker compose -f tests/m2d/compose.yaml up -d
+      - name: Aguardar wp-config.php e CLI
+        run: |
+          for i in $(seq 1 45); do
+            if docker compose -f tests/m2d/compose.yaml exec -T cli wp --info >/dev/null 2>&1 &&
+               docker compose -f tests/m2d/compose.yaml exec -T cli test -f /var/www/html/wp-config.php; then exit 0; fi
+            sleep 3
+          done
+          exit 1
+      - name: Instalar Woo real apenas em volume descartável
+        shell: bash
+        run: |
+          DC="docker compose -f tests/m2d/compose.yaml"
+          $DC exec -T -u root wordpress sh -c 'mkdir -p /var/www/html/wp-content/plugins /var/www/html/wp-content/upgrade /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content'
+          $DC exec -T cli wp core install --url=http://127.0.0.1:8090 --title=M2D-LAB \
+            --admin_user=m2d-lab --admin_password="$M2_WP_ADMIN_PASSWORD" \
+            --admin_email=m2d@example.invalid --skip-email
+          $DC exec -T -u root cli wp plugin install woocommerce --activate --allow-root
+          $DC exec -T cli wp option update woocommerce_manage_stock yes
+          $DC exec -T cli wp option update woocommerce_hold_stock_minutes 1
+      - name: Executar handler nativo de expiração e política fictícia de atraso
+        shell: bash
+        run: |
+          set -o pipefail
+          docker compose -f tests/m2d/compose.yaml exec -T cli wp eval-file /m2d/unpaid-handler.php | tee m2d-unpaid-evidence.log
+          grep -q '"status": "PASSOU"' m2d-unpaid-evidence.log
+          grep -q '"stale_status_after_native_handler": "cancelled"' m2d-unpaid-evidence.log
+      - name: Evidência sem segredos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2d-unpaid-handler-results
+          path: m2d-unpaid-evidence.log
+          retention-days: 5
+          if-no-files-found: ignore
+      - name: Destruir bancos e containers
+        if: always()
+        run: docker compose -f tests/m2d/compose.yaml down -v --remove-orphans || true
