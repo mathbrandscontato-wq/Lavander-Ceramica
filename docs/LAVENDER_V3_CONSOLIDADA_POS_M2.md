@@ -294,3 +294,21 @@ Evento `woocommerce_cancel_unpaid_orders` registrado via `wp_schedule_single_eve
 Antes da homologação comercial, exigir prova de scheduler funcional com logs, monitoramento e rotina de host compatível. Verificar lock, callbacks, entregas WP-Cron/Action Scheduler, tempo efetivo e recuperação de fila atrasada. Sem escolher hospedagem antes da comparação Woo/Nuvemshop e disponibilidade real do servidor. Se scheduler falhar, o pagamento tardio aumenta risco operacional; não autorizar produção.
 
 **Arquivos acrescentados:** `tests/m2e`, workflow, auditoria M2e, checklist sandboxes e checkpoint. **Nenhum merge, deploy, contratação ou modificação em Sanity/produção.**
+
+---
+
+# ADITIVO M2f — CRON EXTERNO VALIDADO NO LABORATÓRIO (23/10/2026)
+**Fonte:** [M2F_CRON_EXTERNO_VALIDACAO.md](M2F_CRON_EXTERNO_VALIDACAO.md) e [M2f Actions Woo](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39933526052). Seções anteriores e Plano V3 original preservados.
+
+## 33. Resolução do bloqueio técnico M2e, sem extrapolação à produção
+No Docker da M2e, eventos não foram consumidos em três tentativas de cron HTTP. M2f reproduziu o problema com evento mínimo e demonstrou uma solução operacional **apenas no laboratório**: desativação de tentativas automáticas de loopback via `DISABLE_WP_CRON`, limpeza de lock descartável e disparo HTTP externo de `wp-cron.php`. A execução simples PASSOU e o cancelamento Woo de pedido vencido PASSOU, preservando pedidos novos/admin. Hipótese mais forte: endereço de loopback inválido entre host e contêineres e locks temporários; não há prova de causa isolada única.
+
+## 34. Gate do agendador revisado
+- **Entrega HTTP externa no laboratório:** PASSOU.
+- **Agendador confiável na infraestrutura comercial definitiva:** NÃO EXECUTADO; permanece **P0 antes de publicar**.
+- **Reconciliação Pix e pagamento tardio:** BLOQUEADO sem sandbox; cron não constitui webhook/autorização financeira.
+- **Frete Correios e painéis da Marina:** BLOQUEADO/NÃO EXECUTADO.
+
+A hospedagem comercial deve suportar tarefas de sistema, monitoramento de jobs, restauração de backups e HTTPS; verificar compatibilidade antes de escolher tecnologia e antes de ativar cron do sistema. Não aplicar limpeza de locks como rotina produtiva.
+
+**Status:** avanço experimental confirmado; o e-commerce ainda não está homologado para compras e publicação, e a plataforma final não foi escolhida.
