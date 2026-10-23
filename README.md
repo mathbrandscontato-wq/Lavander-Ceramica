@@ -1,3 +1,8 @@
+> **ESTADO EM 23/10/2026: PRÉ-PUBLICAÇÃO, NÃO LIBERADO PARA VENDAS.**
+> Código comercial e visual em desenvolvimento, veja docs/M4_PREPUBLICACAO.md e release/approval-gates.json.
+> O repositório GitHub está atualmente PÚBLICO, embora alguns registros históricos abaixo indiquem "privado".
+> A página de demonstração gh-pages não é o checkout verdadeiro. Não publicar este branch como loja.
+>
 # Lavender Cerâmicas — base de engenharia
 
 Repositório de desenvolvimento do site Lavender Cerâmicas, gerenciado inicialmente pela Math Brands e com transferência de titularidade planejada para a cliente.
