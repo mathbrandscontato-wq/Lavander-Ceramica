@@ -18,3 +18,11 @@ M2b estoque/conflito de duas compras BACS em Woo real de teste; M2c reserva/expi
 Obter materiais VIS aprovados; revisar mobile, checkout e conteúdo; receber CEP/pacotes, peças e conta sandbox legítima da cliente; comparar Woo/Nuvemshop pelo TCO; executar pagamentos/frete reais em teste; confirmar host/TLS e backups; só então liberar build indexável e domínio sob autorização.
 
 Status esperado do workflow: build/relatório PASSA, job release-guard BLOQUEIA (falha intencional). O GO técnico nunca faz publicação automaticamente.
+
+
+## Resultado da primeira execução do gate M4 (23/10/2026)
+- Evidência real: https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39986164455
+- Job de build e relatório: **PASSOU**. Suite Node com **60 testes aprovados, 0 falhas**; build Astro compilado; foi armazenada candidata de preview estático mais relatórios por 7 dias.
+- Relatório: **NO_GO**, com **22 bloqueios** e 0 de 16 gates humanos formalmente aprovados. Os 22 são 16 decisões/validações externas + 6 bloqueios detectados automaticamente (placeholders, catálogo fictício, carrinho, checkout, noindex, robots); isso não significa 22 erros de implementação no mesmo nível.
+- Job de liberação: **FALHOU INTENCIONALMENTE**, impedindo rotular a candidata como publicável sem evidência. Não houve publicação ou cobrança.
+- Avisos sobre builds reproduzíveis (lockfiles) e revisão de visibilidade pública constam do runbook; uma alteração posterior na leitura da visibilidade exige novo run para atualização do diagnóstico.

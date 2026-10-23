@@ -46,3 +46,10 @@ No GitHub, abrir o run do workflow M4 e obter o artefato lavender-m4-candidata-p
 
 ## Próximo gate para GO
 Rever telas e referências VIS, obter ativos autorizados, definir plataforma/provedores e titularidade, completar comércio real, executar pagamento/frete por sandboxes legítimas, aprovar privacidade/políticas, backup restaurável e hospedagem com HTTPS, cron e domínio. Depois obter o aceite operacional da Mariana e preparar o PR de integração comercial separado. Não confundir aprovação técnica automática com autorização do cliente.
+
+## Resultado da primeira execução do gate M4 (23/10/2026)
+- Evidência real: https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39986164455
+- Job de build e relatório: **PASSOU**. Suite Node com **60 testes aprovados, 0 falhas**; build Astro compilado; foi armazenada candidata de preview estático mais relatórios por 7 dias.
+- Relatório: **NO_GO**, com **22 bloqueios** e 0 de 16 gates humanos formalmente aprovados. Os 22 são 16 decisões/validações externas + 6 bloqueios detectados automaticamente (placeholders, catálogo fictício, carrinho, checkout, noindex, robots); isso não significa 22 erros de implementação no mesmo nível.
+- Job de liberação: **FALHOU INTENCIONALMENTE**, impedindo rotular a candidata como publicável sem evidência. Não houve publicação ou cobrança.
+- Avisos sobre builds reproduzíveis (lockfiles) e revisão de visibilidade pública constam do runbook; uma alteração posterior na leitura da visibilidade exige novo run para atualização do diagnóstico.
