@@ -45,6 +45,10 @@ jobs:
             --admin_email=m2f@example.invalid --skip-email
           $DC exec -T -u root cli wp plugin install woocommerce --activate --allow-root
           $DC exec -T -u root cli sh -c 'cp /m2f/cron-probe-plugin.php /var/www/html/wp-content/mu-plugins/m2f-probe.php && chown 33:33 /var/www/html/wp-content/mu-plugins/m2f-probe.php'
+          # Site URL do container não é um loopback válido para o próprio container:
+          # impedir cron automático com lock órfão e utilizar cron externo de CI.
+          $DC exec -T -u root cli wp config set DISABLE_WP_CRON true --raw --allow-root
+          $DC exec -T cli wp transient delete doing_cron || true
       - name: Diagnóstico básico e criar evento vencendo em 5 segundos
         shell: bash
         run: |
