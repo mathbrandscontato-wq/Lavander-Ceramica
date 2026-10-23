@@ -5,7 +5,7 @@ on:
     branches:
       - experiment/m2f-cron-diagnostics
     paths:
-      - '.github/workflows/m2e-wp-cron.yml'
+      - '.github/workflows/m2f-woo-cron.yml'
 permissions:
   contents: read
 concurrency:
