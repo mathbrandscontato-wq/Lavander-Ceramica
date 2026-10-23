@@ -1,0 +1,34 @@
+name: M2g contratos de pagamentos e frete (sem deploy)
+on:
+  push:
+    branches:
+      - experiment/m2g-payment-shipping-contracts
+    paths:
+      - 'src/lib/commerce/m2g*'
+      - 'tests/m2g-payment-freight-contracts.test.mjs'
+      - '.github/workflows/m2g-contracts.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m2g-contracts
+  cancel-in-progress: true
+jobs:
+  contracts-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verificar sintaxe das interfaces experimentais
+        run: |
+          node --check src/lib/commerce/m2gPaymentContracts.mjs
+          node --check src/lib/commerce/m2gFreightContracts.mjs
+      - name: Rodar contratos, testes antigos e segurança local
+        run: npm test
+      - name: Build Astro estático, sem integração financeira
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
