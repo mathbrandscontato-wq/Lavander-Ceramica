@@ -39,9 +39,17 @@ try{
     await page.screenshot({path:path.join(folder,route.label+'-'+width+'.png'),fullPage:true});
    }
    if(width===390&&route.label==='home'){
-    const nav=await page.locator('header nav a:visible').count();
-    if(nav===0)blocked.push({id:'M3-MOBILE-NAV',state:'BLOQUEADO POR DESIGN',
-      cause:'Menu mobile é um pseudo-elemento sem navegação acessível e versão VIS ainda não aprovada'});
+    const toggle=page.locator('.site-header__mobile-toggle');
+    record('mobile menu button exists',await toggle.isVisible());
+    await toggle.click();
+    record('mobile menu opens',await page.locator('#lavender-mobile-nav').isVisible());
+    record('mobile menu aria-expanded',await toggle.getAttribute('aria-expanded')==='true');
+    record('mobile menu has existing routes',(await page.locator('#lavender-mobile-nav a:visible').count())===4);
+    await page.keyboard.press('Escape');
+    record('mobile menu closes on Escape',!(await page.locator('#lavender-mobile-nav').isVisible()));
+    record('mobile menu restores focus',await toggle.evaluate(el=>el===document.activeElement));
+    blocked.push({id:'M3B-MOBILE-DESIGN',state:'REVISÃO VISUAL PENDENTE',
+      cause:'Menu funcional no preview; aparência e navegação mobile devem ser avaliadas pela direção criativa'});
    }
   }
   await page.close();

@@ -5,6 +5,7 @@ const {overlay=false} = Astro.props;
 <header class:list={['site-header',{'site-header--overlay':overlay}]} aria-label="Cabeçalho Lavender Cerâmicas">
   <div class="site-header__bar">
     <nav class="site-header__nav" aria-label="Navegação desta página">
+      <button class="site-header__mobile-toggle" type="button" aria-expanded="false" aria-controls="lavender-mobile-nav">Menu <span aria-hidden="true">⌄</span></button>
       <a href="/#pecas">Loja</a>
       <span class="site-header__pending" title="Página de coleções ainda não homologada">Coleções</span>
       <a href="/#personalizadas">Encomendas</a>
@@ -26,4 +27,39 @@ const {overlay=false} = Astro.props;
       <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h2l2.2 12h12.2l2.1-9.1H6"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
     </div>
   </div>
+  <nav id="lavender-mobile-nav" class="site-header__mobile-panel" aria-label="Navegação para celular" hidden>
+    <a href="/#pecas">Loja</a>
+    <a href="/categoria/canecas/">Canecas</a>
+    <a href="/colecoes/personalizadas/">Peças personalizadas</a>
+    <a href="/manifesto/">Manifesto</a>
+  </nav>
 </header>
+
+<script>
+  const mobileToggle=document.querySelector<HTMLButtonElement>('.site-header__mobile-toggle');
+  const mobilePanel=document.querySelector<HTMLElement>('#lavender-mobile-nav');
+  if(mobileToggle&&mobilePanel){
+    const close=()=>{
+      mobilePanel.hidden=true;
+      mobileToggle.setAttribute('aria-expanded','false');
+    };
+    mobileToggle.addEventListener('click',()=>{
+      const opening=mobilePanel.hidden;
+      mobilePanel.hidden=!opening;
+      mobileToggle.setAttribute('aria-expanded',String(opening));
+    });
+    mobilePanel.addEventListener('click',event=>{
+      if((event.target as HTMLElement).closest('a'))close();
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape'&&!mobilePanel.hidden){
+        close();
+        mobileToggle.focus();
+      }
+    });
+    document.addEventListener('click',event=>{
+      if(!mobilePanel.hidden&&!mobilePanel.contains(event.target as Node)&&!mobileToggle.contains(event.target as Node))close();
+    });
+    window.addEventListener('resize',()=>{if(window.innerWidth>760)close();});
+  }
+</script>
