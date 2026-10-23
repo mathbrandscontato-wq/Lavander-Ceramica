@@ -1,0 +1,98 @@
+name: M2f Diagnóstico WP-Cron HTTP (sem deploy)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - experiment/m2f-cron-diagnostics
+    paths:
+      - .github/workflows/m2f-cron-diagnostics.yml
+permissions:
+  contents: read
+concurrency:
+  group: m2f-cron-diag
+  cancel-in-progress: true
+jobs:
+  wp-cron-http-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - name: Segredos randômicos e descartáveis
+        shell: bash
+        run: |
+          for key in M2_DB_ROOT_PASSWORD M2_DB_PASSWORD M2_WP_ADMIN_PASSWORD; do
+            value="$(openssl rand -hex 24)"
+            echo "::add-mask::$value"
+            echo "$key=$value" >> "$GITHUB_ENV"
+          done
+      - name: Ambiente efêmero Woo/MariaDB
+        run: docker compose -f tests/m2f/compose.yaml up -d
+      - name: Aguardar WordPress
+        run: |
+          for i in $(seq 1 50); do
+            if docker compose -f tests/m2f/compose.yaml exec -T cli wp --info >/dev/null 2>&1 &&
+               docker compose -f tests/m2f/compose.yaml exec -T cli test -f /var/www/html/wp-config.php; then exit 0; fi
+            sleep 2
+          done
+          exit 1
+      - name: Instalar WP, Woo e pequeno MU-plugin somente no volume temporário
+        shell: bash
+        run: |
+          DC="docker compose -f tests/m2f/compose.yaml"
+          $DC exec -T -u root wordpress sh -c 'mkdir -p /var/www/html/wp-content/plugins /var/www/html/wp-content/upgrade /var/www/html/wp-content/mu-plugins && chown -R 33:33 /var/www/html/wp-content'
+          $DC exec -T cli wp core install --url=http://127.0.0.1:8090 --title=M2F-LAB \
+            --admin_user=m2f-lab --admin_password="$M2_WP_ADMIN_PASSWORD" \
+            --admin_email=m2f@example.invalid --skip-email
+          $DC exec -T -u root cli wp plugin install woocommerce --activate --allow-root
+          $DC exec -T -u root cli sh -c 'cp /m2f/cron-probe-plugin.php /var/www/html/wp-content/mu-plugins/m2f-probe.php && chown 33:33 /var/www/html/wp-content/mu-plugins/m2f-probe.php'
+      - name: Diagnóstico básico e criar evento vencendo em 5 segundos
+        shell: bash
+        run: |
+          DC="docker compose -f tests/m2f/compose.yaml"
+          echo "WP version: $($DC exec -T cli wp core version)"
+          echo "Woo version: $($DC exec -T cli wp plugin get woocommerce --field=version)"
+          $DC exec -T cli wp eval 'echo "DISABLE_WP_CRON=". (defined("DISABLE_WP_CRON") ? (DISABLE_WP_CRON?"true":"false") : "undefined") . PHP_EOL; echo "ALTERNATE_WP_CRON=". (defined("ALTERNATE_WP_CRON")?(ALTERNATE_WP_CRON?"true":"false"):"undefined") . PHP_EOL; echo "is_action_hook_registered=".has_action("m2f_cron_probe").PHP_EOL; $x=wp_schedule_single_event(time()+5,"m2f_cron_probe",[],true); if(is_wp_error($x)||!$x){exit(3);} echo "scheduled_due=".wp_next_scheduled("m2f_cron_probe").PHP_EOL;'
+          $DC exec -T cli wp cron event list --fields=hook,next_run_gmt --format=table | grep -E 'm2f_cron_probe|hook'
+      - name: Aguardar apenas 8 segundos e chamar WP-Cron HTTP
+        shell: bash
+        run: |
+          sleep 8
+          printf "NOW="; date -u +%s
+          curl -sS -i --max-time 20 "http://127.0.0.1:8090/wp-cron.php" | head -n 16 > m2f-http-response.txt
+          cat m2f-http-response.txt
+          echo "probe result immediately after HTTP"
+          docker compose -f tests/m2f/compose.yaml exec -T cli wp option get m2f_probe_invoked_at || true
+          echo "events remaining"
+          docker compose -f tests/m2f/compose.yaml exec -T cli wp cron event list --fields=hook,next_run_gmt --format=table | grep -E 'm2f_cron_probe|hook' || true
+      - name: Verificar resultado HTTP e controle WP-CLI sem esconder falha
+        shell: bash
+        run: |
+          DC="docker compose -f tests/m2f/compose.yaml"
+          if $DC exec -T cli wp option get m2f_probe_invoked_at >/tmp/m2f-invoked 2>/dev/null; then
+            echo '{"http_delivery":"PASSOU","cli_fallback":"NAO_NECESSARIO"}' > m2f-result.json
+          else
+            echo "HTTP_NOT_EXECUTED, attempting controlled WP-CLI diagnostic"
+            $DC exec -T cli wp cron event run m2f_cron_probe || true
+            if $DC exec -T cli wp option get m2f_probe_invoked_at >/tmp/m2f-invoked 2>/dev/null; then
+              echo '{"http_delivery":"FALHOU","cli_fallback":"PASSOU"}' > m2f-result.json
+            else
+              echo '{"http_delivery":"FALHOU","cli_fallback":"FALHOU"}' > m2f-result.json
+            fi
+          fi
+          echo "origin of callback (if any):"
+          $DC exec -T cli wp option get m2f_probe_last_origin || true
+          cat m2f-result.json
+          grep -q '"http_delivery":"PASSOU"' m2f-result.json
+      - name: Evidências sanitizadas
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2f-http-cron-probe
+          path: |
+            m2f-http-response.txt
+            m2f-result.json
+          retention-days: 5
+          if-no-files-found: ignore
+      - name: Excluir banco e containers
+        if: always()
+        run: docker compose -f tests/m2f/compose.yaml down -v --remove-orphans || true
