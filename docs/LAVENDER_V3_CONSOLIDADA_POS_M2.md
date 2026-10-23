@@ -312,3 +312,21 @@ No Docker da M2e, eventos não foram consumidos em três tentativas de cron HTTP
 A hospedagem comercial deve suportar tarefas de sistema, monitoramento de jobs, restauração de backups e HTTPS; verificar compatibilidade antes de escolher tecnologia e antes de ativar cron do sistema. Não aplicar limpeza de locks como rotina produtiva.
 
 **Status:** avanço experimental confirmado; o e-commerce ainda não está homologado para compras e publicação, e a plataforma final não foi escolhida.
+
+---
+
+# ADITIVO M2g — CONTRATOS FINANCEIROS E FRETE SEM CONEXÃO PRODUTIVA (23/10/2026)
+Fonte: [M2G_CONTRATOS_PAGAMENTO_FRETE.md](M2G_CONTRATOS_PAGAMENTO_FRETE.md) e [Actions 39954937643](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39954937643).
+**Não substitui V3 original ou aditivos anteriores.** Código M2g fica exclusivamente na branch experimental, sem checkout, endpoint, credencial, implantação ou alteração do Sanity.
+
+## 35. Testes de contratos executados
+A implementação de referência de segurança para assinatura Mercado Pago usa manifesto `id;request-id;ts`, HMAC-SHA256 e comparação em tempo constante, com casos negativos de entrada falsa e timestamp vencido. Políticas de pagamento rejeitam liberação automática da peça quando pedido cancelado, valor divergente, estado desconhecido ou SKU realocado. Validação de frete exige CEP de oito dígitos, peso e dimensões positivos e recusa preço não numérico/inválido.
+
+**Evidência:** 56 testes Node passaram (9 novos M2g), sintaxe aprovada e build Astro sem problemas. O retorno para produtos simulados indica `autoFulfill:false` e `checkoutAllowed:false` deliberadamente. Não há chamadas HTTP reais a fornecedores.
+
+## 36. Plataformas e controle de riscos
+WooCommerce segue candidato comercial por provas anteriores de estoque, pedido e cron no laboratório; Nuvemshop não passou por piloto equivalente e continua opção válida. Preferir plugin oficial/estável do fornecedor sobre criar processador financeiro próprio, após avaliar compatibilidade, custos e segurança. Nenhum gateway homologado.
+Pagamento real precisa de conta/sandbox autorizada, servidor HTTPS, credencial armazenada fora do repositório, consulta ao gateway, idempotência persistente, reconciliação de pagamento tardio e testes Pix/cartão. Frete real precisa de origem da Marina, dados de embalagem e conta/integrador autorizado. Sem isso: Gate B/C **BLOQUEADO**.
+
+## 37. Aceites
+Matheus valida checkout/carrinho complementares e fidelidade VIS; Marina valida fornecedor, cadastro comercial, origem, embalagens, estoque inicial, políticas e operação. CI local aprovado não implica aceite da cliente nem lançamento de loja.

@@ -18,9 +18,9 @@ O Melhor Envio oferece sandbox com cadastro separado, aplicação e saldo fictí
 ## Matriz de aceitação
 | ID | Critério | Status no momento da criação | Evidência necessária |
 |---|---|---|---|
-| M2g-01 | Verificação local de HMAC sintético e inputs malformados | AGUARDANDO CI | Rodar testes de contrato; sucesso não equivale a webhook real |
-| M2g-02 | Política conservadora para pagamento tardio e valor divergente | AGUARDANDO CI | Apenas cenário de regra pura |
-| M2g-03 | CEP, peso, dimensões e falhas de cotação sintética | AGUARDANDO CI | Apenas cenários de contrato |
+| M2g-01 | Verificação local de HMAC sintético e inputs malformados | PASSOU (CONTRATOS LOCAIS) | Rodar testes de contrato; sucesso não equivale a webhook real |
+| M2g-02 | Política conservadora para pagamento tardio e valor divergente | PASSOU (CONTRATOS LOCAIS) | Apenas cenário de regra pura |
+| M2g-03 | CEP, peso, dimensões e falhas de cotação sintética | PASSOU (CONTRATOS LOCAIS) | Apenas cenários de contrato |
 | M2g-04 | Pix aprovado/pendente/expirado com provedor real em teste | BLOQUEADO | Conta sandbox, aplicação e testes oficiais |
 | M2g-05 | Webhook assinado real, consulta API e idempotência durável | BLOQUEADO | Sandbox + servidor HTTPS de testes + armazenamento persistente |
 | M2g-06 | Frete real Correios via integrador em sandbox | BLOQUEADO | Cadastro autorizado Melhor Envio, token de teste, origem e embalagem |
@@ -42,3 +42,14 @@ Nenhum segredo, dado de cartão, CNPJ ou conta bancária deve ser enviado por re
 Com sandbox autorizada, obter valores atuais de planos e taxas, fixar versão do provedor e testar assinaturas e notificações reais, duplicatas e fora de ordem, webhook pós-cancelamento, disponibilidade de transporte, falha de cotação e reconsulta segura. Implementar integração somente no servidor PHP/Woo ou adaptador de backend aprovado; **não injetar Node HMAC em um Astro estático**. O melhor cenário pode ser utilizar plugins oficialmente suportados pelo provedor e evitar manter código financeiro próprio.
 
 **Importante:** este código é experimental, não uma integração autorizada pelo gateway. Não habilitar compra com dados de contrato nem expor credenciais.
+ 
+## Evidência posterior ao CI — 23/10/2026
+**Run:** [39954937643](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39954937643) — **PASSOU**. Foram executados 56 testes Node no repositório (incluindo 9 testes M2g), todos aprovados; análise estática de sintaxe dos dois módulos novos e build Astro concluíram sem falha.
+**Não houve:** comunicação com Mercado Pago ou Melhor Envio, conta sandbox, geração de cobrança, consulta de CEP, webhook de provedor, integração comercial real ou publicação. Contratos locais **não substituem** testes com os serviços.
+
+## Portões para próxima execução
+**GATE B não homologado:** a assinatura sintética de manifesto pode ser verificada, mas ainda não há API de consulta/reembolso, notificação recebida com assinatura real nem registro de idempotência atômico persistente. Não habilitar auto-fulfillment.
+**GATE C não homologado:** embalagens e preço de frete normalizados por mock; interface retorna `checkoutAllowed:false`. Sem sandbox autorizada e dados de origem, não existe valor cobrável.
+**GATE D não homologado:** Marina ainda não validou dois painéis, operações reais, drops e pedido/expedição.
+**GATE E não homologado:** telas adicionais de checkout/carrinho seguem dependentes de aprovação visual.
+**GATE F não homologado:** nenhuma autorização de publicação comercial decorre destes testes.
