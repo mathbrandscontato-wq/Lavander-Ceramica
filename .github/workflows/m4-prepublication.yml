@@ -22,6 +22,7 @@ jobs:
     timeout-minutes: 15
     env:
       GITHUB_EVENT_REPOSITORY_PRIVATE: ${{ github.event.repository.private }}
+      GITHUB_EVENT_REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

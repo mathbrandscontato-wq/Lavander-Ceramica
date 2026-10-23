@@ -74,7 +74,9 @@ export function markdownReport(r){
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===THIS){
  const p=process.env.GITHUB_EVENT_REPOSITORY_PRIVATE;
- const r=evaluateReadiness({visibility:p==='true'?'private':p==='false'?'public':'unknown'});
+ const v=process.env.GITHUB_EVENT_REPOSITORY_VISIBILITY;
+ const visibility=v==='public'||v==='private'?v:(p==='true'?'private':p==='false'?'public':'unknown');
+ const r=evaluateReadiness({visibility});
  const out=path.join(ROOT,'.prepublication');
  mkdirSync(out,{recursive:true});
  writeFileSync(path.join(out,'readiness.json'),JSON.stringify(r,null,2)+'\n');
