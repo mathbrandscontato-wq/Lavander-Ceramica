@@ -1,0 +1,51 @@
+name: M3 Browser UX QA (sem deploy)
+on:
+  push:
+    branches:
+      - feat/m3-visual-ux-qa
+    paths:
+      - '.github/workflows/m3-ux-qa.yml'
+      - 'tests/m3-browser-smoke.mjs'
+      - 'src/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m3-browser
+  cancel-in-progress: true
+jobs:
+  preview-ux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependências apenas no runner
+        run: |
+          npm install --no-audit --no-fund
+          npm install --no-save --no-audit --no-fund playwright-core
+      - name: Executar testes unitários e build Astro
+        run: |
+          npm test
+          npm run build
+      - name: Iniciar servidor de prévia local
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/lavender-m3-preview.log 2>&1 &
+          for i in $(seq 1 35); do
+            if curl -fsS http://127.0.0.1:4321/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/lavender-m3-preview.log
+          exit 1
+      - name: Exercitar cinco rotas em quatro larguras
+        run: node tests/m3-browser-smoke.mjs
+      - name: Guardar relatório e capturas privadas por 7 dias
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-m3-browser-evidence
+          path: m3-qa-evidence/
+          retention-days: 7
+          if-no-files-found: ignore
