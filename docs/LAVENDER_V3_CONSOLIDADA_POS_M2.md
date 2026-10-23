@@ -330,3 +330,13 @@ Pagamento real precisa de conta/sandbox autorizada, servidor HTTPS, credencial a
 
 ## 37. Aceites
 Matheus valida checkout/carrinho complementares e fidelidade VIS; Marina valida fornecedor, cadastro comercial, origem, embalagens, estoque inicial, políticas e operação. CI local aprovado não implica aceite da cliente nem lançamento de loja.
+
+---
+
+# ADITIVO M3 — AUDITORIA RESPONSIVA DE PRÉVIA (23/10/2026)
+Evidência: [docs/M3_QA_RESPONSIVO_PREVIA.md](M3_QA_RESPONSIVO_PREVIA.md), [GitHub Actions 39960395633](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39960395633).
+**178 testes de navegador passaram, zero falhas**, sobre cinco páginas estáticas com dados falsos, nas larguras 320, 390, 768 e 1440px. Incluiu filtros, ordenação, galeria, abas, landmarks, links/âncoras, overflow e screenshots 390/1440. Artefato com dez capturas, retenção 7 dias, acesso privado no GitHub.
+
+**Não equivale a aprovação visual:** o menu mobile é ainda um pseudo-elemento sem interação, as pranchas VIS ainda não são comparadas pixel a pixel e faltam arquivos originais de marca/peças. Carrinho/checkout continuam sem telas e operação homologadas. Esses quatro riscos estão registrados e atribuídos.
+
+**Marco M3:** contrato técnico de prévia PASSOU; aceite visual, conteúdo/ativos, navegação acessível mobile e páginas comerciais PENDENTES. Não selecionar plataforma, mesclar branches ou publicar loja com base nessas capturas.
