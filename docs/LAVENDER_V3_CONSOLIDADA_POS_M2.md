@@ -340,3 +340,10 @@ Evidência: [docs/M3_QA_RESPONSIVO_PREVIA.md](M3_QA_RESPONSIVO_PREVIA.md), [GitH
 **Não equivale a aprovação visual:** o menu mobile é ainda um pseudo-elemento sem interação, as pranchas VIS ainda não são comparadas pixel a pixel e faltam arquivos originais de marca/peças. Carrinho/checkout continuam sem telas e operação homologadas. Esses quatro riscos estão registrados e atribuídos.
 
 **Marco M3:** contrato técnico de prévia PASSOU; aceite visual, conteúdo/ativos, navegação acessível mobile e páginas comerciais PENDENTES. Não selecionar plataforma, mesclar branches ou publicar loja com base nessas capturas.
+
+---
+
+# ADITIVO M3b — NAVEGAÇÃO MOBILE FUNCIONAL EM PREVIEW (23/10/2026)
+Fonte: [M3B_NAVEGACAO_MOBILE.md](M3B_NAVEGACAO_MOBILE.md), [Actions 39961453154](https://github.com/mathbrandscontato-wq/Lavander-Ceramica/actions/runs/39961453154).
+A inconsistência mobile de navegação identificada na M3 recebeu proposta técnica reversível: botão Menu com `aria-expanded`, painel com quatro rotas existentes, controles touch/teclado e fechamento por Esc com devolução de foco. **198 verificações passaram, nenhuma falhou**, incluindo testes responsivos 320/390/768/1440px e capturas de prévia.
+**A proposta ainda exige revisão visual de Matheus** antes de ser incorporada às telas aprovadas. Os conflitos VIS/B1 de composição mobile e o material visual definitivo continuam abertos. Não alterar elementos comerciais sem autorização; não há checkout, gateway, frete ou publicação nesta etapa.
