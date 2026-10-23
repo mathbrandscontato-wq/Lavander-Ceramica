@@ -1,0 +1,69 @@
+name: M4 - Pré-publicação GO-NO-GO (sem deploy)
+on:
+  push:
+    branches:
+      - chore/m4-prepublication-release-gate
+    paths:
+      - 'release/**'
+      - 'scripts/prepublication-readiness.mjs'
+      - 'tests/prepublication-readiness.test.mjs'
+      - '.github/workflows/m4-prepublication.yml'
+      - 'docs/M4_*'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lavender-m4-prepublication
+  cancel-in-progress: true
+jobs:
+  build-candidate:
+    name: Compilar candidata e produzir relatório técnico
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GITHUB_EVENT_REPOSITORY_PRIVATE: ${{ github.event.repository.private }}
+      GITHUB_EVENT_REPOSITORY_VISIBILITY: ${{ github.event.repository.visibility }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependências e rodar contratos
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Auditar candidata sem mutações
+        run: node scripts/prepublication-readiness.mjs
+      - name: Guardar candidata de prévia e relatório NO-GO
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-m4-candidata-previa-e-diagnostico
+          path: |
+            dist/
+            .prepublication/
+          retention-days: 7
+          if-no-files-found: error
+  go-no-go:
+    name: Bloqueio de publicação (falha intencional enquanto houver pendências)
+    needs: build-candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: lavender-m4-candidata-previa-e-diagnostico
+          path: release-audit
+      - name: Exigir todos os gates antes de qualquer publicação
+        shell: bash
+        run: |
+          node -e '
+          const fs=require("node:fs");
+          const r=JSON.parse(fs.readFileSync("release-audit/.prepublication/readiness.json","utf8"));
+          if(r.decision!=="TECHNICAL_GO_REVIEW_REQUIRED"){
+            console.error("::error title=NAO_PUBLICAR::"+r.blockers+" bloqueios encontrados. Consulte o relatório no artefato.");
+            process.exit(2);
+          }
+          console.log("Gate técnico sem bloqueios. Ainda depende de autorizações humanas e verificações externas.");
+          '

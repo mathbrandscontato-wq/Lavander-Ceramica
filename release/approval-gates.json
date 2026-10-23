@@ -1,0 +1,135 @@
+{
+  "schema": "lavender-release-approval-v1",
+  "project": "Lavender Cerâmicas",
+  "note": "APROVADO somente após evidência verificável e aceite legítimo, nunca por simulação.",
+  "gates": [
+    {
+      "id": "VIS-FIDELITY",
+      "owner": "Matheus",
+      "requirement": "Aprovar fidelidade da V2/V3 e adaptação mobile M3b; comparar com pranchas VIS originais",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "BRAND-ASSETS",
+      "owner": "Matheus e Marina",
+      "requirement": "Aprovar imagens, logo e fontes para uso público; fotos artificiais não representam peças reais",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "CATALOG-DROPS",
+      "owner": "Marina",
+      "requirement": "Fornecer SKUs, estoque/preços, primeiras peças, fotos, datas, medidas e disponibilidade de drops",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "CHECKOUT-UX",
+      "owner": "Matheus",
+      "requirement": "Aprovar carrinho, checkout, pedido e telas de erro em mobile/desktop",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "PLATFORM-TCO",
+      "owner": "Math Brands e Marina",
+      "requirement": "Decidir WooCommerce versus Nuvemshop com testes, custos 12/24 meses e operação viável",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "PAYMENT-END-TO-END",
+      "owner": "Engenharia e Marina",
+      "requirement": "Sandbox real Pix/cartão, webhook autenticado, preço verificado, idempotência e pagamento tardio",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "FREIGHT-END-TO-END",
+      "owner": "Engenharia e Marina",
+      "requirement": "CEP de origem, embalagens, cotação real, erro seguro, etiqueta e prazo",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "SANITY-OPERATIONS",
+      "owner": "Marina",
+      "requirement": "Comprovar cadastro, aprovação, drop, operação de pedido e publicação em painel de titularidade",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "LEGAL-COMMERCIAL",
+      "owner": "Marina",
+      "requirement": "Conferir dados do vendedor, LGPD, trocas/devolução, avarias, prazos e canais de contato",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "HOST-DNS-HTTPS",
+      "owner": "DevOps e Marina",
+      "requirement": "Validar hospedagem compatível, SSL, DNS, cron do host, logs, domínio e fornecedor comercial",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "BACKUP-RESTORE",
+      "owner": "DevOps",
+      "requirement": "Testar backup/restore e preservar versão atual da branch gh-pages antes de substituir",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "SECURITY-REPO",
+      "owner": "Math Brands",
+      "requirement": "Conferir visibilidade pública do repositório, acessos, segredos e conteúdo exposto",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "ACCESSIBILITY-PERFORMANCE",
+      "owner": "QA",
+      "requirement": "Teste WCAG aplicável, contrastes, teclado, performance e dispositivos reais",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "SEO-FINAL",
+      "owner": "Math Brands",
+      "requirement": "Remover noindex e robots Disallow apenas após Go/No-Go de produção e conteúdo aprovado",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "HANDOFF",
+      "owner": "Math Brands e Marina",
+      "requirement": "Treinamento, propriedade dos serviços, documentação e suporte de atualização",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    },
+    {
+      "id": "FINAL-AUTHORIZATION",
+      "owner": "Marina",
+      "requirement": "Autorizar início de vendas reais depois de validar pagamentos, frete e operação",
+      "critical": true,
+      "status": "PENDENTE",
+      "evidence": ""
+    }
+  ]
+}
