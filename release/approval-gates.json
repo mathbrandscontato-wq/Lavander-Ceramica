@@ -17,7 +17,10 @@
       "requirement": "Aprovar imagens, logo e fontes para uso público; fotos artificiais não representam peças reais",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "Quatro produtos do primeiro conjunto de vendas identificados, sem fotografias recebidas neste checkpoint.",
+      "next_step": "Imagens reais, vídeo hero, autorização de uso, logo oficial, versões mobile aprovadas.",
+      "progress_date": "2026-11-03"
     },
     {
       "id": "CATALOG-DROPS",
@@ -25,7 +28,10 @@
       "requirement": "Fornecer SKUs, estoque/preços, primeiras peças, fotos, datas, medidas e disponibilidade de drops",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "Quatro nomes de produtos e respectivos preços informados à direção em 03/11/2026; valores não incluídos neste repositório público.",
+      "next_step": "Fotografias autorizadas, SKU, quantidade disponível por peça, variantes, descrição, categorias e data do primeiro drop.",
+      "progress_date": "2026-11-03"
     },
     {
       "id": "CHECKOUT-UX",
@@ -49,7 +55,10 @@
       "requirement": "Sandbox real Pix/cartão, webhook autenticado, preço verificado, idempotência e pagamento tardio",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "Pix e cartão escolhidos como meios de pagamento. Cadastro PJ específico da marca e conta recebedora ainda em preparação.",
+      "next_step": "Formalização MEI/CNPJ, titularidade de conta, escolha do provedor, sandbox autorizada, testes de pagamento/webhook, idempotência e atraso.",
+      "progress_date": "2026-11-03"
     },
     {
       "id": "FREIGHT-END-TO-END",
@@ -57,7 +66,10 @@
       "requirement": "CEP de origem, embalagens, cotação real, erro seguro, etiqueta e prazo",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "Origem em Joinville/SC informada. Referência para embalagem de uma caneca: 14 x 14 x 14 cm, peso total aproximado de 0,55 kg.",
+      "next_step": "CEP completo e endereço ficam fora do repositório público; cotar por canal autorizado. Confirmar pesos/embalagens dos demais produtos, prazo, seguro, avarias, integrador e testes.",
+      "progress_date": "2026-11-03"
     },
     {
       "id": "SANITY-OPERATIONS",
@@ -65,7 +77,10 @@
       "requirement": "Comprovar cadastro, aprovação, drop, operação de pedido e publicação em painel de titularidade",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "Primeiro conjunto de quatro produtos identificado para futura rotina de cadastro.",
+      "next_step": "Validar cadastro e administração pela Marina em ambiente seguro; nenhuma inserção em production.",
+      "progress_date": "2026-11-03"
     },
     {
       "id": "LEGAL-COMMERCIAL",
@@ -73,7 +88,10 @@
       "requirement": "Conferir dados do vendedor, LGPD, trocas/devolução, avarias, prazos e canais de contato",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "A cliente pretende comercializar como pessoa jurídica e informou que está abrindo um MEI.",
+      "next_step": "Conclusão do cadastro, dados comerciais oficiais e documentos/políticas, conformidade fiscal e processo de estorno.",
+      "progress_date": "2026-11-03"
     },
     {
       "id": "HOST-DNS-HTTPS",
@@ -81,7 +99,10 @@
       "requirement": "Validar hospedagem compatível, SSL, DNS, cron do host, logs, domínio e fornecedor comercial",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "Domínio pretendido informado: lavenderceramicas.com.br.",
+      "next_step": "Verificar registro e controle do domínio, acesso DNS e provedor de hospedagem, HTTPS, cron e políticas de redirecionamento.",
+      "progress_date": "2026-11-03"
     },
     {
       "id": "BACKUP-RESTORE",
