@@ -59,8 +59,8 @@
       "critical": true,
       "status": "PENDENTE",
       "evidence": "",
-      "progress": "Plugin oficial Mercado Pago 8.9.7 ativado em WordPress/Woo descartável. IDs woo-mercado-pago-basic e woo-mercado-pago-custom registrados, sem conta/credenciais. Evidência: Actions 41752442630.",
-      "next_step": "CNPJ/MEI finalizado, conta de cobrança, conta sandbox, teste end-to-end Pix/cartão, webhook real, duplicata, atrasos, estorno e reconciliação.",
+      "progress": "Plugin oficial Mercado Pago 8.9.7 ativado em WordPress/Woo descartável. IDs woo-mercado-pago-basic e woo-mercado-pago-custom registrados, sem conta/credenciais. Evidência: Actions 41752442630.\n04/11: com os plugins Woo/MP/Melhor Envio ativos, três rodadas de checkout concorrente via Store API BACS fictício passaram, com um vencedor por SKU, cancelamento/recompra e rejeição HTTP409 de valor adulterado. Prova 41755279678. Sem pagamento real.",
+      "next_step": "Implementar campos extras de endereço exigidos pelo Melhor Envio 3.x em checkout acessível e testar Pix/cartão por sandbox da Marina, assinatura real, idempotência e pagamento tardio; confirmar custo/contas e LGPD.",
       "progress_date": "2026-11-03"
     },
     {
@@ -70,7 +70,7 @@
       "critical": true,
       "status": "PENDENTE",
       "evidence": "",
-      "progress": "Plugin oficial Melhor Envio 3.0.8 ativado em Woo descartável (Actions 41752442630). Para uma caneca, exemplo de 0,55 kg e 14×14×14 cm; sem consulta real.",
+      "progress": "Plugin oficial Melhor Envio 3.0.8 ativado em Woo descartável (Actions 41752442630). Para uma caneca, exemplo de 0,55 kg e 14×14×14 cm; sem consulta real.\n04/11: plugin Melhor Envio 3.0.8 adiciona CPF/CNPJ, número e bairro obrigatórios no billing_address do Store API. Fixture de laboratório ajustado sem desativar requisitos. Não houve cotação real.",
       "next_step": "Vincular conta autorizada, validar CEP origem no ambiente protegido, medidas de todas as peças, cotação, erros, etiquetas, seguro e prazos.",
       "progress_date": "2026-11-03"
     },
