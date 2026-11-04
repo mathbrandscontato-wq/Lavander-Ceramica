@@ -1,0 +1,86 @@
+name: M5 — Plugin oficial Mercado Pago e Melhor Envio em WP descartável
+on:
+  push:
+    branches:
+      - feat/m5-preview-media-payment-pilot
+    paths:
+      - '.github/workflows/m5-plugin-pilot.yml'
+      - 'tests/m5/compose.yaml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: lavender-m5-official-plugins
+  cancel-in-progress: true
+jobs:
+  wordpress-plugins:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Gerar senhas descartáveis somente no runner
+        shell: bash
+        run: |
+          for key in M2_DB_ROOT_PASSWORD M2_DB_PASSWORD M2_WP_ADMIN_PASSWORD; do
+            value="$(openssl rand -hex 24)"
+            echo "::add-mask::$value"
+            echo "$key=$value" >> "$GITHUB_ENV"
+          done
+      - name: Subir WordPress e MariaDB isolados
+        run: docker compose -f tests/m5/compose.yaml up -d
+      - name: Aguardar WordPress CLI
+        shell: bash
+        run: |
+          DC="docker compose -f tests/m5/compose.yaml"
+          for i in $(seq 1 55); do
+            if $DC exec -T cli wp --info >/dev/null 2>&1 &&
+               $DC exec -T cli test -f /var/www/html/wp-config.php; then exit 0; fi
+            sleep 3
+          done
+          exit 1
+      - name: Instalar plugins do catálogo oficial do WordPress
+        shell: bash
+        run: |
+          set -e
+          DC="docker compose -f tests/m5/compose.yaml"
+          $DC exec -T -u root wordpress sh -c 'mkdir -p /var/www/html/wp-content/plugins /var/www/html/wp-content/upgrade /var/www/html/wp-content/uploads && chown -R 33:33 /var/www/html/wp-content'
+          $DC exec -T cli wp core install --url=http://127.0.0.1:8090 --title=M5-LAB \
+            --admin_user=m5lab --admin_password="$M2_WP_ADMIN_PASSWORD" \
+            --admin_email=m5@example.invalid --skip-email
+          $DC exec -T -u root cli wp plugin install woocommerce --activate --allow-root
+          $DC exec -T -u root cli wp plugin install woocommerce-mercadopago --activate --allow-root
+          $DC exec -T -u root cli wp plugin install melhor-envio-cotacao --activate --allow-root
+      - name: Registrar plugins e versões, sem configuração financeira
+        shell: bash
+        run: |
+          set -e
+          DC="docker compose -f tests/m5/compose.yaml"
+          $DC exec -T cli wp plugin list --fields=name,status,version,update --format=json > m5-plugin-results.json
+          node --input-type=module -e '
+            import fs from "node:fs";
+            const all=JSON.parse(fs.readFileSync("m5-plugin-results.json","utf8"));
+            for(const slug of ["woocommerce","woocommerce-mercadopago","melhor-envio-cotacao"]){
+              const p=all.find(x=>x.name===slug);
+              if(!p || p.status!=="active")throw new Error("PLUGIN_NOT_ACTIVE:"+slug);
+              console.log(slug+" "+p.version+" "+p.status);
+            }
+            console.log("INSTALACAO_LOCAL_OK; PAGAMENTO_REAL_NAO_EXECUTADO; COTACAO_REAL_NAO_EXECUTADA");
+          '
+          $DC exec -T cli wp eval '
+            if(!class_exists("WooCommerce")){fwrite(STDERR,"WooCommerce not found\n");exit(3);}
+            echo "Registered payment gateway ids (not configured): ".json_encode(array_keys(WC()->payment_gateways()->payment_gateways()))."\n";
+            echo "No external account connected\n";
+          ' | tee m5-plugin-observations.txt
+      - name: Artefatos somente de diagnóstico sem segredos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-m5-official-plugin-install
+          path: |
+            m5-plugin-results.json
+            m5-plugin-observations.txt
+          retention-days: 5
+          if-no-files-found: ignore
+      - name: Excluir WordPress e MariaDB
+        if: always()
+        run: docker compose -f tests/m5/compose.yaml down -v --remove-orphans || true
