@@ -18,8 +18,8 @@
       "critical": true,
       "status": "PENDENTE",
       "evidence": "",
-      "progress": "Quatro produtos do primeiro conjunto de vendas identificados, sem fotografias recebidas neste checkpoint.",
-      "next_step": "Imagens reais, vídeo hero, autorização de uso, logo oficial, versões mobile aprovadas.",
+      "progress": "Autorizado pela direção criativa usar fotografias geradas provisórias. Doze arquivos WebP oriundos do protótipo V2 já integrados à prévia Astro e etiquetados como ilustrativos; não representam SKUs reais. M5 QA Chromium PASSOU.",
+      "next_step": "Logo final, vídeo definitivo, direitos comerciais e fotos reais (ou aceitação documentada de representações ilustrativas por SKU) ainda a validar antes de vender.",
       "progress_date": "2026-11-03"
     },
     {
@@ -47,7 +47,10 @@
       "requirement": "Decidir WooCommerce versus Nuvemshop com testes, custos 12/24 meses e operação viável",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "Definido piloto técnico de WooCommerce com os plugins oficiais Mercado Pago e Melhor Envio. Instalação e ativação reais concluídas no laboratório com Woo 11.2.1, MP 8.9.7, ME 3.0.8. Escolha tecnicamente recomendada, sem contratação.",
+      "next_step": "Host PHP/DB/cron e custo total 12/24 meses; comprovação de operação simplificada com Marina, revisar Nuvemshop alternativa e riscos de custom checkout.",
+      "progress_date": "2026-11-03"
     },
     {
       "id": "PAYMENT-END-TO-END",
@@ -56,8 +59,8 @@
       "critical": true,
       "status": "PENDENTE",
       "evidence": "",
-      "progress": "Pix e cartão escolhidos como meios de pagamento. Cadastro PJ específico da marca e conta recebedora ainda em preparação.",
-      "next_step": "Formalização MEI/CNPJ, titularidade de conta, escolha do provedor, sandbox autorizada, testes de pagamento/webhook, idempotência e atraso.",
+      "progress": "Plugin oficial Mercado Pago 8.9.7 ativado em WordPress/Woo descartável. IDs woo-mercado-pago-basic e woo-mercado-pago-custom registrados, sem conta/credenciais. Evidência: Actions 41752442630.",
+      "next_step": "CNPJ/MEI finalizado, conta de cobrança, conta sandbox, teste end-to-end Pix/cartão, webhook real, duplicata, atrasos, estorno e reconciliação.",
       "progress_date": "2026-11-03"
     },
     {
@@ -67,8 +70,8 @@
       "critical": true,
       "status": "PENDENTE",
       "evidence": "",
-      "progress": "Origem em Joinville/SC informada. Referência para embalagem de uma caneca: 14 x 14 x 14 cm, peso total aproximado de 0,55 kg.",
-      "next_step": "CEP completo e endereço ficam fora do repositório público; cotar por canal autorizado. Confirmar pesos/embalagens dos demais produtos, prazo, seguro, avarias, integrador e testes.",
+      "progress": "Plugin oficial Melhor Envio 3.0.8 ativado em Woo descartável (Actions 41752442630). Para uma caneca, exemplo de 0,55 kg e 14×14×14 cm; sem consulta real.",
+      "next_step": "Vincular conta autorizada, validar CEP origem no ambiente protegido, medidas de todas as peças, cotação, erros, etiquetas, seguro e prazos.",
       "progress_date": "2026-11-03"
     },
     {
@@ -100,8 +103,8 @@
       "critical": true,
       "status": "PENDENTE",
       "evidence": "",
-      "progress": "Domínio pretendido informado: lavenderceramicas.com.br.",
-      "next_step": "Verificar registro e controle do domínio, acesso DNS e provedor de hospedagem, HTTPS, cron e políticas de redirecionamento.",
+      "progress": "Cloudflare conectado consultado: não foi localizada zona autorizada para mathbrands.com.br ou lavenderceramicas.com.br na conta acessível. A demonstração existente permanece no GitHub Pages.",
+      "next_step": "Verificar titularidade do domínio da Marina, provedor DNS real, hospedagem Woo PHP/DB, domínio HTTPS, cron servidor e back-up antes de apontar produção.",
       "progress_date": "2026-11-03"
     },
     {
@@ -118,7 +121,10 @@
       "requirement": "Conferir visibilidade pública do repositório, acessos, segredos e conteúdo exposto",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "Repo continua público sem segredos novos. Dependências npm do Astro e Studio passaram a ter package-lock.json versionados (Actions 41753334322). Mídias provisórias publicáveis, mas não são produtos reais.",
+      "next_step": "Auditar histórico completo, políticas de acesso e backend financeiro, instalar chaves exclusivamente em secrets, testar restauração e LGPD.",
+      "progress_date": "2026-11-03"
     },
     {
       "id": "ACCESSIBILITY-PERFORMANCE",
@@ -126,7 +132,10 @@
       "requirement": "Teste WCAG aplicável, contrastes, teclado, performance e dispositivos reais",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "QA funcional prévio M3b 198 verificações aprovadas. QA M5 com 198 verificações novamente e 16 inspeções de carregamento/identificação de mídia em Chromium nas larguras 390/1440, todas aprovadas.",
+      "next_step": "WCAG integral, contraste/foco em checkout real, Core Web Vitals na hospedagem de produção, imagens finais e compra completa ainda pendentes.",
+      "progress_date": "2026-11-03"
     },
     {
       "id": "SEO-FINAL",

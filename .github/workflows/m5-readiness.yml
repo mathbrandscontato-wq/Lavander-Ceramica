@@ -1,0 +1,52 @@
+name: M5 — Checklist de pré-publicação sem bypass
+on:
+  push:
+    branches:
+      - feat/m5-preview-media-payment-pilot
+    paths:
+      - 'release/**'
+      - 'docs/M5_*'
+      - '.github/workflows/m5-readiness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m5-readiness
+  cancel-in-progress: true
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      GITHUB_EVENT_REPOSITORY_VISIBILITY: public
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Reproduzir build sem alterar versões de dependências
+        run: |
+          npm ci --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Gerar relatório GO/NO-GO com evidências, sem publicar
+        run: node scripts/prepublication-readiness.mjs
+      - name: Bloquear conclusão comercial enquanto há pendências reais
+        shell: bash
+        run: |
+          node -e '
+          const fs=require("node:fs");
+          const r=JSON.parse(fs.readFileSync(".prepublication/readiness.json","utf8"));
+          console.log(JSON.stringify({decision:r.decision,blockers:r.blockers,warnings:r.warnings,approvals:r.approvals}));
+          if(r.decision!=="NO_GO"){console.error("NECESSITA REVISAO HUMANA: mudança inesperada na classificação.");process.exit(2);}
+          console.log("NO_GO comercial mantido: nenhuma transação nem publicação autorizada.");
+          '
+      - name: Arquivar relatório público sem segredos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-m5-readiness-NO-GO
+          path: .prepublication/
+          retention-days: 5
+          if-no-files-found: ignore
