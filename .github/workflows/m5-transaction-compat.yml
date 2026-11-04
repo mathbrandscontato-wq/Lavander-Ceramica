@@ -30,8 +30,23 @@ jobs:
             echo "::add-mask::$value"
             echo "$key=$value" >> "$GITHUB_ENV"
           done
-      - name: Ambiente MariaDB e WordPress sem portas externas
-        run: docker compose -f tests/m2b/compose.yaml up -d
+      - name: Ambiente MariaDB e WordPress no runner (retry para falhas de registro Docker)
+        shell: bash
+        run: |
+          set -e
+          for attempt in 1 2 3 4; do
+            if docker compose -f tests/m2b/compose.yaml up -d; then
+              echo "DOCKER_BOOT_PASSOU tentativa $attempt"
+              exit 0
+            fi
+            if [ "$attempt" -eq 4 ]; then
+              echo "::error title=DOCKER_REGISTRY_INDISPONIVEL::Falha de download/autenticacao de imagem (sem prova comercial)."
+              exit 1
+            fi
+            echo "Docker registry temporariamente inacessivel; tentativa seguinte $attempt"
+            docker compose -f tests/m2b/compose.yaml down --remove-orphans || true
+            sleep $((attempt * 10))
+          done
       - name: Aguardar WordPress e volume
         run: |
           for i in $(seq 1 45); do
