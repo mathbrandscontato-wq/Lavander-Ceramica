@@ -18,7 +18,14 @@ try{
   const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
   for(const route of pages){
    await page.goto(BASE+route.path,{waitUntil:'networkidle'});
-   const images=await page.locator('img[src^="/assets/"]').evaluateAll(nodes=>nodes.map(n=>({
+   // Imagens abaixo da dobra usam loading=lazy: percorrer a página antes de afirmar que não carregaram.
+   const imgElements=page.locator('img[src^="/assets/"]');
+   for(let i=0;i<await imgElements.count();i++){
+    const img=imgElements.nth(i);
+    await img.scrollIntoViewIfNeeded();
+    await img.evaluate(async node=>{try{await node.decode();}catch{ /* Falha será capturada pelo teste naturalWidth. */ }});
+   }
+   const images=await imgElements.evaluateAll(nodes=>nodes.map(n=>({
       src:n.getAttribute('src'),
       alt:n.getAttribute('alt'),
       loaded:n.complete && n.naturalWidth>0
