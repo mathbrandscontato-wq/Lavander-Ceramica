@@ -16,7 +16,7 @@ Seguiremos como candidato prioritário com **Astro para a experiência editorial
 ## Infraestrutura e domínio
 - O domínio desejado é lavenderceramicas.com.br, **sem registro/titularidade/DNS ainda comprovados**.
 - Cloudflare conectado consultado em 03/11/2026: não há zonas autorizadas visíveis para mathbrands.com.br nem lavenderceramicas.com.br, portanto não podemos modificar o DNS ali ou presumir acesso à futura conta da Marina.
-- A demonstração em lavander.mathbrands.com.br permanece em gh-pages; fazer cópia recuperável antes de redirecionar.
+- A demonstração em lavender.mathbrands.com.br permanece em gh-pages; fazer cópia recuperável antes de redirecionar.
 
 ## Pendências não substituíveis por decisões técnicas
 1. Marina: formalizar MEI, conta recebedora separada, titularidade de gateway/serviço logístico e acesso de homologação, por canal protegido.
