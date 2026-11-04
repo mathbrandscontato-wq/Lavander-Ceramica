@@ -30,7 +30,10 @@ const subtotal=String(add.data?.totals?.total_price||'');
 if(!subtotal)throw Error('EXPECTED_TOTAL_NOT_FOUND');
 const adr={first_name:'Cliente',last_name:'PosCancelamento',address_1:'Endereco de laboratorio',
  city:'Cidade Ficticia',state:'SP',postcode:'01001000',country:'BR',
- company:'',address_2:'',phone:'11999999999',email:'m2brebuy@example.invalid'};
+ company:'',address_2:'',phone:'11999999999',email:'m2brebuy@example.invalid',
+ 'melhor-envio-cotacao/billing-document':'11144477735',
+ 'melhor-envio-cotacao/address-number':'1',
+ 'melhor-envio-cotacao/neighborhood':'Centro'};
 const pay={billing_address:adr,shipping_address:adr,payment_method:'bacs',payment_data:[]};
 const tampered=await req('POST','/checkout',{...pay,expected_total:'1'});
 const accepted=await req('POST','/checkout',{...pay,expected_total:subtotal});

@@ -32,7 +32,12 @@ async function request(method,path,session,body){
 }
 const address=(who)=>({first_name:'Cliente',last_name:who,company:'',address_1:'Rua Exemplo, 1',
   address_2:'',city:'Cidade Ficticia',state:'SP',postcode:'01001000',country:'BR',
-  email:'m2b'+who+'@example.invalid',phone:'11999999999'});
+  email:'m2b'+who+'@example.invalid',phone:'11999999999',
+  // Melhor Envio 3.x registra campos obrigatórios na localização billing_address da Store API.
+  // CPF abaixo é valor EXCLUSIVAMENTE SINTÉTICO de exemplo público de teste, nunca cliente real.
+  'melhor-envio-cotacao/billing-document':'11144477735',
+  'melhor-envio-cotacao/address-number':'1',
+  'melhor-envio-cotacao/neighborhood':'Centro'});
 async function prepare(who){
  const session={token:null,nonce:process.env.M2B_GUEST_NONCE||null,cookie:'',name:who};
  const initial=await request('GET','/cart',session);
