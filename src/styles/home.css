@@ -126,3 +126,9 @@
  .home-custom__card {width:100%;min-height:0;padding:28px}
  .home-custom h2 {font-size:clamp(36px,9vw,48px)}
 }
+
+/* M5: fotos geradas na versão de protótipo, com caráter ilustrativo explícito. */
+.home-custom__backdrop{
+ background-image:linear-gradient(90deg,rgba(44,29,26,.38),rgba(40,24,21,.07)),url('/assets/custom-banner.webp');
+ background-size:cover;background-position:center;
+}

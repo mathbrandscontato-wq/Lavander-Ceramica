@@ -1,7 +1,7 @@
 ---
 import '../../styles/product-detail.css';
 import {detailPreview as product} from '../../data/productDetailPreview.mjs';
-const gallery=product.images;
+const gallery=product.images.map((image,index)=>({...image,src:`/assets/product-${String(index+1).padStart(2,'0')}.webp`}));
 ---
 <section class="detail page-container" aria-labelledby="detail-title" data-detail-preview>
   <div class="detail__top">
@@ -10,14 +10,14 @@ const gallery=product.images;
         {gallery.map((image,index)=>
           <button class="detail__thumb" type="button" data-gallery-index={index}
             aria-label={image.name} aria-pressed={index===0?'true':'false'}>
-            <span class:list={['detail__thumb-media',`detail__thumb-media--${image.tone}`]} aria-hidden="true"></span>
+            <span class:list={['detail__thumb-media',`detail__thumb-media--${image.tone}`]} style={`background-image:url(${image.src})`} aria-hidden="true"></span>
             <span class="sr-only">{image.name}</span>
           </button>)}
       </div>
       <div class="detail__stage" role="group" aria-label="Visualização da mídia selecionada">
-        <div class="detail__stage-media" data-gallery-stage data-tone={gallery[0].tone} role="img"
-          aria-label={`Fotografia pendente — ${gallery[0].name}`}>
-          <span>Fotografia original pendente</span>
+        <div class="detail__stage-media" data-gallery-stage data-tone={gallery[0].tone} style={`background-image:url(${gallery[0].src})`} role="img"
+          aria-label={`Imagem ilustrativa provisória — ${gallery[0].name}`}>
+          <span>Imagem ilustrativa · foto real pendente</span>
         </div>
         <button type="button" class="detail__arrow detail__arrow--previous" aria-label="Imagem anterior" data-gallery-back>‹</button>
         <button type="button" class="detail__arrow detail__arrow--next" aria-label="Próxima imagem" data-gallery-forward>›</button>
@@ -85,10 +85,10 @@ const gallery=product.images;
     const thumbnails=[...root.querySelectorAll<HTMLButtonElement>('[data-gallery-index]')];
     const stage=root.querySelector<HTMLElement>('[data-gallery-stage]');
     const media=[
-      {label:'Vista frontal',tone:'clay'},
-      {label:'Vista lateral',tone:'sand'},
-      {label:'Vista superior',tone:'cream'},
-      {label:'Detalhe da superfície',tone:'terra'},
+      {label:'Vista frontal',tone:'clay',src:'/assets/product-01.webp'},
+      {label:'Vista lateral',tone:'sand',src:'/assets/product-02.webp'},
+      {label:'Vista superior',tone:'cream',src:'/assets/product-03.webp'},
+      {label:'Detalhe da superfície',tone:'terra',src:'/assets/product-04.webp'},
     ];
     let active=0;
     function setActive(index:number){
@@ -96,7 +96,8 @@ const gallery=product.images;
       thumbnails.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===active)));
       if(stage){
         stage.dataset.tone=media[active].tone;
-        stage.setAttribute('aria-label',`Fotografia pendente — ${media[active].label}`);
+        stage.style.backgroundImage=`url('${media[active].src}')`;
+        stage.setAttribute('aria-label',`Imagem ilustrativa provisória — ${media[active].label}`);
       }
     }
     thumbnails.forEach((button,index)=>button.addEventListener('click',()=>setActive(index)));
