@@ -1,0 +1,50 @@
+name: M5 — QA visual Chromium com imagens provisórias (sem deploy)
+on:
+  push:
+    branches:
+      - feat/m5-preview-media-payment-pilot
+    paths:
+      - '.github/workflows/m5-visual-qa.yml'
+      - 'tests/m5-browser-media.mjs'
+      - 'src/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m5-visual-browser
+  cancel-in-progress: true
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar app e browser runner
+        run: |
+          npm install --no-audit --no-fund
+          npm install --no-save --no-audit --no-fund playwright-core
+      - name: Construir prévia estática, sem dados comerciais reais
+        run: npm run build
+      - name: Abrir prévia local
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/lavender-m5-preview.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:4321/ >/dev/null && exit 0 || sleep 1; done
+          cat /tmp/lavender-m5-preview.log
+          exit 1
+      - name: QA funcional M3b (layout preservado)
+        run: node tests/m3-browser-smoke.mjs
+      - name: Verificar WebPs e gerar capturas comparáveis
+        run: node tests/m5-browser-media.mjs
+      - name: Guardar 20 capturas e relatórios sem deploy
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-m5-browser-visual-NO-GO
+          path: |
+            m3-qa-evidence/
+            m5-browser-evidence/
+          retention-days: 5
+          if-no-files-found: ignore
