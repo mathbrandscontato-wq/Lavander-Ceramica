@@ -33,7 +33,7 @@ jobs:
           test -f dist/assets/hero.webp
           test -f dist/assets/manifesto.webp
           test -f dist/assets/custom-banner.webp
-          for i in $(seq -w 1 9); do test -f "dist/assets/product-$i.webp"; done
+          for i in $(seq 1 9); do printf -v id "%02d" "$i"; test -f "dist/assets/product-$id.webp"; done
           grep -q noindex dist/index.html
       - name: Guardar apenas prévia, sem publicar
         uses: actions/upload-artifact@v4
