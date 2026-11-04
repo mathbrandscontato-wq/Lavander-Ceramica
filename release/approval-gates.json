@@ -9,7 +9,10 @@
       "requirement": "Aprovar fidelidade da V2/V3 e adaptação mobile M3b; comparar com pranchas VIS originais",
       "critical": true,
       "status": "PENDENTE",
-      "evidence": ""
+      "evidence": "",
+      "progress": "04/11/2026: o diretor criativo aprovou o protótipo demonstrativo acessado por https://lavender.mathbrands.com.br, servido pela branch gh-pages (versão estática V2). Este aceite estabelece a referência visual da demonstração, não aprova automaticamente a implementação Astro/M5, carrinho, checkout, conteúdo de produtos ou operação comercial.",
+      "next_step": "Comparar Astro/M5 e a adaptação mobile com a referência demonstrativa aprovada e as pranchas VIS originais. Obter aceite visual separado das páginas novas de compra e das diferenças que afetem a identidade. Manter gate PENDENTE até verificação completa.",
+      "progress_date": "2026-11-04"
     },
     {
       "id": "BRAND-ASSETS",
