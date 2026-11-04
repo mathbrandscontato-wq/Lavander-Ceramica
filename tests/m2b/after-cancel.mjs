@@ -40,6 +40,9 @@ const result={
  tampered_total_error:tampered.data?.code||null,
  valid_total_http:accepted.http,valid_checkout_status:accepted.data?.status||null,
  valid_checkout_order_id:accepted.data?.order_id||null,
+ tampered_param_errors:Object.keys(tampered.data?.data?.params||{}),
+ valid_param_errors:Object.keys(accepted.data?.data?.params||{}),
+ valid_error_message:accepted.data?.code==='rest_invalid_param'?String(accepted.data?.message||'').slice(0,260):null,
  gateway:'bacs_offline',payment_confirmed:false,
  status:(tampered.http===409&&accepted.http>=200&&accepted.http<300&&
      accepted.data?.status==='on-hold')?'PASSOU':'FALHOU'

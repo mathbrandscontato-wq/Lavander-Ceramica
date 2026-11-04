@@ -62,7 +62,10 @@ function clean(which,settled){
  if(settled.status==='rejected')return {buyer:which,http:0,transport_error:String(settled.reason?.name||'error')};
  const {http,body}=settled.value;
  return {buyer:which,http,order_id:body?.order_id||null,status:body?.status||null,
-  error_code:body?.code||null,payment_status:body?.payment_result?.payment_status||null};
+  error_code:body?.code||null,
+  error_message:body?.code==='rest_invalid_param'?String(body?.message||'').slice(0,260):null,
+  error_params:body?.code==='rest_invalid_param'?Object.keys(body?.data?.params||{}):[],
+  payment_status:body?.payment_result?.payment_status||null};
 }
 const results=[clean('A',one),clean('B',two)];
 // 2 pedidos com status do checkout considerado ativo no método OFFLINE: alertar e falhar.
