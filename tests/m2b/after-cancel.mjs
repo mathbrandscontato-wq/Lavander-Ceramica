@@ -29,7 +29,8 @@ if(add.http<200||add.http>=300)throw Error('REBUY_ADD_'+add.http+'_'+(add.data?.
 const subtotal=String(add.data?.totals?.total_price||'');
 if(!subtotal)throw Error('EXPECTED_TOTAL_NOT_FOUND');
 const adr={first_name:'Cliente',last_name:'PosCancelamento',address_1:'Endereco de laboratorio',
- city:'Cidade Ficticia',state:'SP',postcode:'01001000',country:'BR',email:'m2brebuy@example.invalid'};
+ city:'Cidade Ficticia',state:'SP',postcode:'01001000',country:'BR',
+ company:'',address_2:'',phone:'11999999999',email:'m2brebuy@example.invalid'};
 const pay={billing_address:adr,shipping_address:adr,payment_method:'bacs',payment_data:[]};
 const tampered=await req('POST','/checkout',{...pay,expected_total:'1'});
 const accepted=await req('POST','/checkout',{...pay,expected_total:subtotal});
@@ -42,6 +43,7 @@ const result={
  valid_checkout_order_id:accepted.data?.order_id||null,
  tampered_param_errors:Object.keys(tampered.data?.data?.params||{}),
  valid_param_errors:Object.keys(accepted.data?.data?.params||{}),
+ valid_error_details:accepted.data?.code==='rest_invalid_param'?JSON.stringify(accepted.data?.data?.details||{}).slice(0,900):null,
  valid_error_message:accepted.data?.code==='rest_invalid_param'?String(accepted.data?.message||'').slice(0,260):null,
  gateway:'bacs_offline',payment_confirmed:false,
  status:(tampered.http===409&&accepted.http>=200&&accepted.http<300&&

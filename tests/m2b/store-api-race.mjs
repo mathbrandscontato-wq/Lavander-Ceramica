@@ -32,7 +32,7 @@ async function request(method,path,session,body){
 }
 const address=(who)=>({first_name:'Cliente',last_name:who,company:'',address_1:'Rua Exemplo, 1',
   address_2:'',city:'Cidade Ficticia',state:'SP',postcode:'01001000',country:'BR',
-  email:'m2b'+who+'@example.invalid',phone:''});
+  email:'m2b'+who+'@example.invalid',phone:'11999999999'});
 async function prepare(who){
  const session={token:null,nonce:process.env.M2B_GUEST_NONCE||null,cookie:'',name:who};
  const initial=await request('GET','/cart',session);
@@ -65,6 +65,7 @@ function clean(which,settled){
   error_code:body?.code||null,
   error_message:body?.code==='rest_invalid_param'?String(body?.message||'').slice(0,260):null,
   error_params:body?.code==='rest_invalid_param'?Object.keys(body?.data?.params||{}):[],
+  error_details:body?.code==='rest_invalid_param'?JSON.stringify(body?.data?.details||{}).slice(0,900):null,
   payment_status:body?.payment_result?.payment_status||null};
 }
 const results=[clean('A',one),clean('B',two)];
