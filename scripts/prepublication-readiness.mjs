@@ -19,6 +19,12 @@ export function evaluateReadiness({root=ROOT,visibility='unknown'}={}){
  for(const g of approval.gates){
   if(!g.id||seen.has(g.id))throw Error('DUPLICATE_GATE_ID');
   seen.add(g.id);
+  if(!String(g.owner||'').trim()||!String(g.requirement||'').trim())
+   add('METADATA-'+g.id,'BLOCKER','Gate sem responsável ou requisito verificável');
+  if(g.critical!==true&&g.critical!==false)
+   add('CRITICALITY-'+g.id,'BLOCKER','Gate sem classificação explícita de criticidade');
+  if(!['PENDENTE','APROVADO'].includes(g.status))
+   add('STATUS-'+g.id,'BLOCKER','Status de aprovação desconhecido');
   if(g.status==='APROVADO'&&!String(g.evidence||'').trim())
    add('EVIDENCE-'+g.id,'BLOCKER','Aceite informado sem evidência');
   if(g.critical&&g.status!=='APROVADO')
