@@ -15,6 +15,15 @@ export function evaluateReadiness({root=ROOT,visibility='unknown'}={}){
  if(approval.schema!=='lavender-release-approval-v1'||!Array.isArray(approval.gates))throw Error('INVALID_GATE_SCHEMA');
  const findings=[];
  function add(id,severity,description){findings.push({id,severity,description});}
+ const requiredCriticalIds=['VIS-FIDELITY','BRAND-ASSETS','CATALOG-DROPS','CHECKOUT-UX','PLATFORM-TCO','PAYMENT-END-TO-END','FREIGHT-END-TO-END','SANITY-OPERATIONS','LEGAL-COMMERCIAL','HOST-DNS-HTTPS','BACKUP-RESTORE','SECURITY-REPO','ACCESSIBILITY-PERFORMANCE','SEO-FINAL','HANDOFF','FINAL-AUTHORIZATION'];
+ // Fixture projects can exercise individual gates; the real release manifest cannot silently drop a gate.
+ if(approval.project==='Lavender Cerâmicas'){
+  for(const id of requiredCriticalIds){
+   const gate=approval.gates.find(g=>g.id===id);
+   if(!gate)add('MISSING-GATE-'+id,'BLOCKER','Critério obrigatório ausente do manifesto');
+   else if(gate.critical!==true)add('NONCRITICAL-GATE-'+id,'BLOCKER','Critério obrigatório rebaixado de criticidade');
+  }
+ }
  const seen=new Set();
  for(const g of approval.gates){
   if(!g.id||seen.has(g.id))throw Error('DUPLICATE_GATE_ID');
