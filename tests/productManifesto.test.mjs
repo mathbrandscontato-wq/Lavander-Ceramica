@@ -40,7 +40,7 @@ test('P07 mantém copy proposta não aprovada e ordem semântica texto antes da 
   assert.equal(manifestoPreview.paragraphs.length,4);
   const page=read('src/pages/manifesto.astro');
   assert.ok(page.indexOf('manifesto__text')<page.indexOf('manifesto__photo'));
-  assert.match(page,/Fotografia editorial original pendente/);
+  assert.match(page,/Imagem editorial ilustrativa · substituição prevista/);
   assert.match(page,/não foi aprovado como depoimento/i);
 });
 

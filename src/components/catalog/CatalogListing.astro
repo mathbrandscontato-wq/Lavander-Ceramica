@@ -71,7 +71,9 @@ const count=items.length;
         <div class="listing__item" data-preview-category={item.filter}
           data-preview-order={item.sortOrder} data-preview-name={item.name}>
           <ProductCard name={item.name} kind={item.kind} categoryId={item.categoryId}
-            preview priceLabel="Preço a confirmar" />
+            preview priceLabel="Preço a confirmar"
+            imageSrc={`/assets/product-${String(((item.sortOrder-1)%9)+1).padStart(2,'0')}.webp`}
+            imageAlt={`Imagem ilustrativa provisória de cerâmica. Não representa o item ${item.name}.`} />
         </div>)}
     </div>
 
