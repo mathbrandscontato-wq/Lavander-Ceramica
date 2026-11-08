@@ -68,7 +68,7 @@ test('approved-looking fixture cannot pass with blank evidence or owner', () => 
 
 test('approved-looking fixture cannot pass with preview SEO protections still enabled', () => fixture(({root,put}) => {
   put('dist/index.html', '<meta name="robots" content="noindex,nofollow">');
-  put('dist/robots.txt', 'User-agent: *\\nDisallow: /\\n');
+  put('dist/robots.txt', 'User-agent: *\nDisallow: /\n');
   const result = evaluateReadiness({root, visibility:'private'});
   assert.equal(result.decision, 'NO_GO');
   assert.ok(result.findings.some(f => f.id === 'NOINDEX'));
