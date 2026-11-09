@@ -34,7 +34,7 @@ export function evaluateReadiness({root=ROOT,visibility='unknown'}={}){
    add('CRITICALITY-'+g.id,'BLOCKER','Gate sem classificação explícita de criticidade');
   if(!['PENDENTE','APROVADO'].includes(g.status))
    add('STATUS-'+g.id,'BLOCKER','Status de aprovação desconhecido');
-  if(g.status==='APROVADO'&&!String(g.evidence||'').trim())
+  if(g.status==='APROVADO'&&(typeof g.evidence!=='string'||!g.evidence.trim()))
    add('EVIDENCE-'+g.id,'BLOCKER','Aceite informado sem evidência');
   if(g.critical&&g.status!=='APROVADO')
    add('GATE-'+g.id,'BLOCKER',g.requirement+' (responsável: '+g.owner+')');
