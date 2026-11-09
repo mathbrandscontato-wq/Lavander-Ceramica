@@ -74,3 +74,13 @@ test('approved-looking fixture cannot pass with preview SEO protections still en
   assert.ok(result.findings.some(f => f.id === 'NOINDEX'));
   assert.ok(result.findings.some(f => f.id === 'ROBOTS'));
 }));
+
+test('approved-looking fixture rejects object and array evidence rather than coercing to text', () => fixture(({root,gates,save}) => {
+  gates.find(g => g.id === 'PAYMENT-END-TO-END').evidence = {status:'pending'};
+  gates.find(g => g.id === 'FREIGHT-END-TO-END').evidence = ['lab plugin installed'];
+  save();
+  const result = evaluateReadiness({root, visibility:'private'});
+  assert.equal(result.decision, 'NO_GO');
+  assert.ok(result.findings.some(f => f.id === 'EVIDENCE-PAYMENT-END-TO-END'));
+  assert.ok(result.findings.some(f => f.id === 'EVIDENCE-FREIGHT-END-TO-END'));
+}));
