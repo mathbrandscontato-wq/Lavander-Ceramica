@@ -15,7 +15,10 @@ export const homePreviewCards = Object.freeze([
   {id:'amostra-07',name:'Peça ilustrativa 07',categoryId:'canecas',kind:'caneca',row:2},
   {id:'amostra-08',name:'Peça ilustrativa 08',categoryId:'decoracao',kind:'vaso',row:2},
   {id:'amostra-09',name:'Peça ilustrativa 09',categoryId:'pratos',kind:'prato',row:2},
-]);
+].map((item,index)=>Object.freeze({...item,
+  imageSrc:`/assets/product-${String(index+1).padStart(2,'0')}.webp`,
+  imageAlt:`Imagem ilustrativa provisória de cerâmica. Não representa o produto ${item.name}.`
+})));
 
 export const homePreviewFilters=Object.freeze([
   {id:'todos',label:'Todos'},

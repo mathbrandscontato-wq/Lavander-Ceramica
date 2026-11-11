@@ -1,0 +1,44 @@
+name: M5 — Mídias ilustrativas e integridade Astro (sem deploy)
+on:
+  push:
+    branches:
+      - feat/m5-preview-media-payment-pilot
+    paths:
+      - 'src/**'
+      - 'public/assets/**'
+      - 'tests/m5-preview-media.test.mjs'
+      - '.github/workflows/m5-preview-media.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m5-preview-media
+  cancel-in-progress: true
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testar suite e build estático da prévia
+        run: |
+          npm install --no-audit --no-fund
+          npm test
+          npm run build
+      - name: Comprovar WebPs no build e noindex
+        run: |
+          test -f dist/assets/hero.webp
+          test -f dist/assets/manifesto.webp
+          test -f dist/assets/custom-banner.webp
+          for i in $(seq 1 9); do printf -v id "%02d" "$i"; test -f "dist/assets/product-$id.webp"; done
+          grep -q noindex dist/index.html
+      - name: Guardar apenas prévia, sem publicar
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-m5-preview-images-NO-GO
+          path: dist/
+          retention-days: 5
+          if-no-files-found: error

@@ -1,0 +1,48 @@
+name: M5 — Builds reproduzíveis Astro e Sanity (sem deploy)
+on:
+  push:
+    branches:
+      - feat/m5-preview-media-payment-pilot
+    paths:
+      - 'package-lock.json'
+      - 'studio/package-lock.json'
+      - '.github/workflows/m5-locked-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m5-locked-build
+  cancel-in-progress: true
+jobs:
+  astro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Instalar estritamente por lockfile e testar
+        run: |
+          npm ci --no-audit --no-fund
+          npm test
+          npm run build
+          test -f dist/assets/hero.webp
+          test -f dist/assets/product-01.webp
+  sanity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: studio/package-lock.json
+      - name: Instalar e validar Studio sem publicar
+        working-directory: studio
+        run: |
+          npm ci --no-audit --no-fund
+          npm run check
+          npm run build

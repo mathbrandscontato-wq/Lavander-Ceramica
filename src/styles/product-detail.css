@@ -61,3 +61,7 @@
  .detail__specs{margin-top:23px}
  .detail__tab{font-size:13px}
 }
+
+/* M5: imagens ilustrativas na galeria existente; nenhuma imagem representa SKU real. */
+.detail__stage-media,.detail__thumb-media{background-size:cover;background-position:center}
+.detail__stage-media span{position:relative;z-index:1}

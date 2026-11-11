@@ -31,3 +31,7 @@ border-radius:999px;background:rgba(255,255,255,.66);color:#564234;font-size:11p
  .manifesto__copy p{margin-bottom:18px}
  .manifesto__photo{min-height:clamp(310px,92vw,530px)}
 }
+
+/* M5: arte demonstrativa reutilizada, sem alterar medidas da prancha. */
+.manifesto__photo{background-image:url('/assets/manifesto.webp');background-size:cover;background-position:center}
+.manifesto__photo::before{content:none}
