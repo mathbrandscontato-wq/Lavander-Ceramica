@@ -1,0 +1,74 @@
+name: Lavender — Site Showcase V1 (motion isolado)
+on:
+  push:
+    branches: ["feat/lavender-site-showcase-motion-v1"]
+    paths:
+      - 'motion/lavender-showcase/**'
+      - '.github/workflows/motion-lavender.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependências Astro em modo isolado
+        run: npm ci --no-audit --no-fund
+      - name: Build das páginas reais
+        run: npm run build
+      - name: Iniciar servidor preview (sem deploy)
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4321 > /tmp/lavender-site-preview.log 2>&1 &
+          for i in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:4321/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/lavender-site-preview.log
+          exit 1
+      - name: Instalar dependências Remotion e Playwright
+        run: npm install --prefix motion/lavender-showcase --no-audit --no-fund
+      - name: Instalar Chromium via Playwright
+        run: |
+          cd motion/lavender-showcase
+          npx playwright install --with-deps chromium
+      - name: Capturar páginas e interações verdadeiras
+        run: node motion/lavender-showcase/scripts/capture.mjs
+      - name: Renderizar 605 frames 1080x1920
+        run: |
+          cd motion/lavender-showcase
+          mkdir -p out
+          npx remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_V1_sem_audio.mp4 \
+            --codec h264 --crf 17 --pixel-format yuv420p --concurrency 2
+      - name: Sintetizar trilha original e criar versão com áudio
+        run: |
+          node motion/lavender-showcase/scripts/original-audio.mjs
+          ffmpeg -y -loglevel error \
+            -i motion/lavender-showcase/out/Lavender_Ceramicas_Site_Showcase_V1_sem_audio.mp4 \
+            -i motion/lavender-showcase/out/original-score.wav \
+            -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart \
+            motion/lavender-showcase/out/Lavender_Ceramicas_Site_Showcase_V1.mp4
+      - name: Renderizar prévia compacta
+        run: |
+          cd motion/lavender-showcase
+          npx remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_preview.mp4 \
+            --codec h264 --scale 0.5 --crf 28 --pixel-format yuv420p --concurrency 2
+          npx remotion still src/index.jsx LavenderShowcase out/preview-frame.png --frame 345
+      - name: QA de vídeo e navegação
+        run: node motion/lavender-showcase/scripts/qa.mjs
+      - name: Publicar artefatos para revisão (sem deploy comercial)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-site-showcase-v1-artifacts
+          path: |
+            motion/lavender-showcase/out/*.mp4
+            motion/lavender-showcase/out/*.png
+            motion/lavender-showcase/out/*REPORT*.json
+            motion/lavender-showcase/public/captures/capture-report.json
+          if-no-files-found: warn
+          retention-days: 14
