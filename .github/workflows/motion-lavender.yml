@@ -44,6 +44,8 @@ jobs:
           mkdir -p out
           npx remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_V1_sem_audio.mp4 \
             --codec h264 --crf 17 --pixel-format yuv420p --concurrency 2
+      - name: Instalar FFmpeg para mux e QA
+        run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
       - name: Sintetizar trilha original e criar versão com áudio
         run: |
           node motion/lavender-showcase/scripts/original-audio.mjs
