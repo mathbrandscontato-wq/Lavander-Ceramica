@@ -5,14 +5,14 @@ const CW=1080, CH=1920;
 const BG='#faf7f2', PURPLE='#6844b8';
 const curve=Easing.bezier(.22,1,.36,1);
 const shots=[
-  {id:'01',title:'Close imersivo',from:0,to:45,source:'home-hero',fromScale:1.73,toScale:1.58,fromX:340,toX:240,fromY:90,toY:140,tilt:0},
+  {id:'01',title:'Close imersivo',from:0,to:45,source:'home-hero',fromScale:1.73,toScale:1.58,fromX:490,toX:440,fromY:90,toY:140,tilt:0},
   {id:'02',title:'Revelação de interface',from:45,to:111,source:'home-hero',fromScale:1.3,toScale:.69,fromX:140,toX:0,fromY:180,toY:0,tilt:-1.3},
-  {id:'03',title:'Hero e tipografia',from:111,to:192,source:'home-hero',fromScale:.79,toScale:1.28,fromX:0,toX:240,fromY:-80,toY:100,tilt:1.25},
-  {id:'04',title:'Scroll vitrine',from:192,to:273,source:'home-shop',altSource:'home-filter',fromScale:1.03,toScale:1.14,fromX:70,toX:-75,fromY:90,toY:-110,tilt:-.55},
-  {id:'05',title:'Canecas e filtros',from:273,to:351,source:'category',altSource:'category-filter',fromScale:.84,toScale:1.14,fromX:-100,toX:90,fromY:40,toY:-100,tilt:.8},
+  {id:'03',title:'Hero e tipografia',from:111,to:192,source:'home-hero',fromScale:.79,toScale:1.28,fromX:90,toX:330,fromY:-80,toY:100,tilt:1.25},
+  {id:'04',title:'Scroll vitrine',from:192,to:273,source:'home-shop',altSource:'home-filter',fromScale:1.03,toScale:1.24,fromX:160,toX:80,fromY:90,toY:-110,tilt:-.55},
+  {id:'05',title:'Canecas e filtros',from:273,to:351,source:'category',altSource:'category-filter',fromScale:.98,toScale:1.22,fromX:215,toX:325,fromY:40,toY:-100,tilt:.8},
   {id:'06',title:'Detalhe e galeria',from:351,to:426,source:'product',altSource:'product-gallery',fromScale:.93,toScale:1.26,fromX:60,toX:-175,fromY:40,toY:130,tilt:-.7},
   {id:'07a',title:'Peças personalizadas',from:426,to:480,source:'personalizadas',fromScale:.8,toScale:1.1,fromX:-55,toX:105,fromY:60,toY:-50,tilt:.75},
-  {id:'07b',title:'Manifesto editorial',from:480,to:534,source:'manifesto',fromScale:.8,toScale:1.12,fromX:95,toX:-60,fromY:20,toY:-80,tilt:-.85},
+  {id:'07b',title:'Manifesto editorial',from:480,to:534,source:'manifesto',fromScale:.8,toScale:1.12,fromX:290,toX:260,fromY:20,toY:-80,tilt:-.85},
 ];
 function norm(frame,from,to){return Math.max(0,Math.min(1,(frame-from)/(to-from)));}
 function mix(from,to,t){return from+(to-from)*t;}
