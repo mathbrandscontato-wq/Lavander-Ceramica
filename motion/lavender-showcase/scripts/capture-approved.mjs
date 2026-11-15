@@ -20,9 +20,15 @@ const evidence={
 page.on('pageerror',e=>evidence.warnings.push('Page JS: '+e.message));
 async function goto(route,label){
   const response=await page.goto(URL+'/#'+route,{waitUntil:'networkidle',timeout:45000});
-  if(!response?.ok())throw new Error('HTTP error '+route+': '+response?.status());
+  // Hash-only SPA navigation returns null response in Playwright.
+  if(response && !response.ok())throw new Error('HTTP error '+route+': '+response.status());
   await page.locator('#main').waitFor({state:'visible',timeout:12000});
-  await page.waitForFunction(()=>document.querySelector('#main h1')?.textContent?.trim().length>0,{timeout:12000});
+  const expected={
+    '/':'Peças autorais','/categoria/canecas':'Canecas',
+    '/produto/caneca-estante':'Caneca Estante',
+    '/colecoes/personalizadas':'Peças Personalizadas','/manifesto':'Manifesto'
+  }[route];
+  await page.waitForFunction((needle)=>document.querySelector('#main h1')?.textContent?.includes(needle),expected,{timeout:12000});
   await page.evaluate(async()=>{
     await document.fonts.ready;
     await Promise.all(Array.from(document.images).filter(i=>i.src).map(i=>i.decode().catch(()=>{})));
