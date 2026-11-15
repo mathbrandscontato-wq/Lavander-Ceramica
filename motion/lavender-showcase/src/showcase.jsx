@@ -9,8 +9,8 @@ const shots=[
   {id:'02',title:'Revelação de interface',from:45,to:111,source:'home-hero',fromScale:1.3,toScale:.69,fromX:140,toX:0,fromY:180,toY:0,tilt:-1.3},
   {id:'03',title:'Hero e tipografia',from:111,to:192,source:'home-hero',fromScale:.79,toScale:1.28,fromX:90,toX:330,fromY:-80,toY:100,tilt:1.25},
   {id:'04',title:'Scroll vitrine',from:192,to:273,source:'home-shop',altSource:'home-filter',fromScale:1.03,toScale:1.24,fromX:160,toX:80,fromY:90,toY:-110,tilt:-.55},
-  {id:'05',title:'Canecas e filtros',from:273,to:351,source:'category',altSource:'category-filter',fromScale:.98,toScale:1.22,fromX:215,toX:325,fromY:40,toY:-100,tilt:.8},
-  {id:'06',title:'Detalhe e galeria',from:351,to:426,source:'product',altSource:'product-gallery',fromScale:.93,toScale:1.26,fromX:60,toX:-175,fromY:40,toY:130,tilt:-.7},
+  {id:'05',title:'Canecas e filtros',from:273,to:351,source:'category',altSource:'category-sort',fromScale:.98,toScale:1.22,fromX:215,toX:325,fromY:40,toY:-100,tilt:.8},
+  {id:'06',title:'Detalhe e informações',from:351,to:426,source:'product',altSource:'product-details',fromScale:.93,toScale:1.26,fromX:60,toX:-175,fromY:40,toY:130,tilt:-.7},
   {id:'07a',title:'Peças personalizadas',from:426,to:480,source:'personalizadas',fromScale:.8,toScale:1.1,fromX:-55,toX:105,fromY:60,toY:-50,tilt:.75},
   {id:'07b',title:'Manifesto editorial',from:480,to:534,source:'manifesto',fromScale:.8,toScale:1.12,fromX:290,toX:260,fromY:20,toY:-80,tilt:-.85},
 ];
@@ -70,8 +70,7 @@ function Closing({frame}){
    <div style={{width:660,height:660,borderRadius:660,position:'absolute',top:480,left:210,
      border:'1px solid rgba(104,68,184,.23)',transform:`scale(${mix(.64,1.16,p)})`,opacity:Math.max(0,1-p*.75)}}/>
    <div style={{textAlign:'center',transform:`translateY(${mix(110,-25,p)}px) scale(${mix(.94,1,p)})`,opacity:appear}}>
-     <div style={{fontFamily:"Georgia, 'Times New Roman', serif",fontSize:103,letterSpacing:'-.03em',fontWeight:400,color:PURPLE,lineHeight:1}}>LAVENDER</div>
-     <div style={{fontFamily:'Arial, sans-serif',fontSize:24,letterSpacing:'.48em',fontWeight:400,color:PURPLE,marginTop:24,paddingLeft:12}}>CERÂMICAS</div>
+     <Img src={staticFile('lavender-logo.svg')} style={{width:650,height:330,objectFit:'contain',display:'block',margin:'auto'}}/>
      <div style={{width:90,height:1,background:'#b5a4b8',margin:'86px auto 34px'}}/>
      <div style={{fontFamily:'Arial, sans-serif',fontSize:20,letterSpacing:'.05em',color:'#6b666f'}}>Design e desenvolvimento por Math Brands</div>
    </div>
