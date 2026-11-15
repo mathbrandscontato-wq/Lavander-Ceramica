@@ -40,7 +40,7 @@ async function shot(filename){
 }
 try{
   await goto('/','Home');
-  if(!await page.locator('.brand-logo').isVisible())throw Error('Official approved logo was not loaded');
+  if(!await page.locator('.header .brand-logo').first().isVisible())throw Error('Official approved logo was not loaded');
   const fonts=await page.evaluate(()=>Array.from(document.fonts).filter(f=>f.status==='loaded').map(f=>f.family));
   if(!fonts.some(f=>f.includes('Cormorant Garamond'))||!fonts.some(f=>f.includes('Inter')))throw Error('Approved typography did not load: '+fonts.join(','));
   evidence.fonts=fonts;
