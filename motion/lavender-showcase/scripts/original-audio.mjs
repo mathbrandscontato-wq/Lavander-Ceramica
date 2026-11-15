@@ -5,7 +5,7 @@ wav.write('RIFF',0);wav.writeUInt32LE(36+total*2,4);wav.write('WAVEfmt ',8);
 wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);
 wav.writeUInt32LE(sr,24);wav.writeUInt32LE(sr*2,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);
 wav.write('data',36);wav.writeUInt32LE(total*2,40);
-const scene=[1.5,3.7,6.4,9.1,11.7,14.2,17.8];
+const scene=[1.5,3.7,6.56,9.10,11.70,14.20,16.0,17.7];
 function smooth(x){x=Math.max(0,Math.min(1,x));return x*x*(3-2*x)}
 for(let i=0;i<total;i++){
  const t=i/sr,fade=smooth(t/1.0)*smooth((seconds-t)/1.15),mod=.7+.3*Math.sin(t*.21);

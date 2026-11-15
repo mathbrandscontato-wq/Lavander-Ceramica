@@ -1,7 +1,7 @@
-name: Lavender — Site Showcase V2 (snapshot aprovado)
+name: Lavender — Site Showcase V3 (câmera fluida)
 on:
   push:
-    branches: ["feat/lavender-site-showcase-motion-v2-approved"]
+    branches: ["feat/lavender-site-showcase-motion-v3-fluid"]
     paths:
       - 'motion/lavender-showcase/**'
       - '.github/workflows/motion-lavender.yml'
@@ -46,11 +46,11 @@ jobs:
           mkdir -p motion/lavender-showcase/public
           cp /tmp/lavender-gh-pages/assets/lavender-logo.svg motion/lavender-showcase/public/lavender-logo.svg
           node motion/lavender-showcase/scripts/capture-approved.mjs
-      - name: Renderizar 605 frames 1080x1920
+      - name: Renderizar fluidez cinematográfica — 605 frames 1080x1920
         run: |
           cd motion/lavender-showcase
           mkdir -p out
-          npx remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_V2_sem_audio.mp4 \
+          npx remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_V3_sem_audio.mp4 \
             --codec h264 --crf 17 --pixel-format yuv420p --concurrency 2
       - name: Instalar FFmpeg para mux e QA
         run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
@@ -58,23 +58,23 @@ jobs:
         run: |
           node motion/lavender-showcase/scripts/original-audio.mjs
           ffmpeg -y -loglevel error \
-            -i motion/lavender-showcase/out/Lavender_Ceramicas_Site_Showcase_V2_sem_audio.mp4 \
+            -i motion/lavender-showcase/out/Lavender_Ceramicas_Site_Showcase_V3_sem_audio.mp4 \
             -i motion/lavender-showcase/out/original-score.wav \
             -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart \
-            motion/lavender-showcase/out/Lavender_Ceramicas_Site_Showcase_V2.mp4
+            motion/lavender-showcase/out/Lavender_Ceramicas_Site_Showcase_V3.mp4
       - name: Renderizar prévia compacta
         run: |
           cd motion/lavender-showcase
-          npx remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_V2_preview.mp4 \
+          npx remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_V3_preview.mp4 \
             --codec h264 --scale 0.5 --crf 28 --pixel-format yuv420p --concurrency 2
           npx remotion still src/index.jsx LavenderShowcase out/preview-frame.png --frame 345
       - name: QA de vídeo e navegação
-        run: node motion/lavender-showcase/scripts/qa-approved.mjs
+        run: node motion/lavender-showcase/scripts/qa-fluid.mjs
       - name: Publicar artefatos para revisão (sem deploy comercial)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: lavender-site-showcase-v2-approved-artifacts
+          name: lavender-site-showcase-v3-fluid-artifacts
           path: |
             motion/lavender-showcase/out/*.mp4
             motion/lavender-showcase/out/*.png
