@@ -1,204 +1,175 @@
 import React from 'react';
 import {AbsoluteFill, Img, staticFile, useCurrentFrame} from 'remotion';
+import capture from './interaction-data.json';
 
-/**
- * LAVENDER / SITE SHOWCASE V4 — DIRECTED FROM THE ACTUAL PROVIDED REFERENCE
- *
- * Reference analyzed: ScreenRecording_11-14-2026 17-59-57_1.mp4
- * 605 frames, 30 fps, 20.1667 s.
- *
- * Rather than independent slide animations, the reference has a repeatable
- * choreography: immersive site -> rapid optical pullback -> compositional
- * reveal -> optical dive -> close-up exploration -> smooth scroll/panel
- * transitions -> wide reveal -> brand interlude -> zoom-return loop.
- *
- * Only the official approved Lavender prototype screenshots / brand SVG
- * are used here. Nothing from the reference reel is copied into this film.
- */
-
-const BG='#faf7f2', INK='#191d39', PURPLE='#6844b8', FPS=30;
-const L=605;
-const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-const mix=(a,b,t)=>a+(b-a)*t;
-const progress=(f,a,b)=>clamp((f-a)/(b-a));
+// V5: actual verified browser actions, not invented interactions or slides.
+const PAPER='#faf7f2', PURPLE='#6844b8';
+const clamp=(n,min=0,max=1)=>Math.min(max,Math.max(min,n));
+const progress=(frame,a,b)=>clamp((frame-a)/(b-a));
 const smooth=t=>t*t*(3-2*t);
-const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-const glow=(f,at,radius)=>Math.max(0,1-Math.abs(f-at)/radius);
+const ease=t=>1-Math.pow(1-t,3);
+const mix=(a,b,t)=>a+(b-a)*t;
+const pointFor=id=>capture.actions.find(a=>a.id===id)?.point||{x:720,y:460};
+const viewportHeight=900;
 
-/* Natural tangents: there is no stop at a mid-keyframe. */
-function spline(keys,frame){
-  if(frame<=keys[0][0])return keys[0].slice(1);
-  if(frame>=keys[keys.length-1][0])return keys[keys.length-1].slice(1);
-  const k=keys.findIndex((v,i)=>i+1<keys.length&&frame<=keys[i+1][0]);
-  const a=keys[k],b=keys[k+1],prev=keys[Math.max(0,k-1)],next=keys[Math.min(keys.length-1,k+2)];
-  const length=b[0]-a[0],t=clamp((frame-a[0])/length),t2=t*t,t3=t2*t;
-  return [1,2,3].map(i=>{
-    const m0=(b[i]-prev[i])/(b[0]-prev[0]);
-    const m1=(next[i]-a[i])/(next[0]-a[0]);
-    return (2*t3-3*t2+1)*a[i]+(t3-2*t2+t)*m0*length+
-      (-2*t3+3*t2)*b[i]+(t3-t2)*m1*length;
-  });
+const steps=[
+  {source:'v5-home',start:0,end:70,action:'explorar',click:53,scroll:'top',fromScale:.92,toScale:1.16},
+  {source:'v5-loja',start:62,end:129,action:'filtrar-canecas',click:112,scroll:'top',fromScale:.97,toScale:1.20},
+  {source:'v5-loja-canecas',start:121,end:193,action:'abrir-produto',click:175,scroll:'target',fromScale:1.06,toScale:1.25},
+  {source:'v5-produto',start:185,end:280,action:'cuidados',click:264,scroll:'target',fromScale:.90,toScale:1.21},
+  {source:'v5-cuidados',start:272,end:347,action:'voltar-home',click:330,scroll:'back-to-top',fromScale:1.14,toScale:1.10},
+  {source:'v5-home-return',start:339,end:458,action:'personalizar',click:440,scroll:'target',fromScale:.88,toScale:1.23},
+  {source:'v5-personalizadas',start:450,end:524,action:'sobre',click:506,scroll:'top',fromScale:.96,toScale:1.19},
+  {source:'v5-manifesto',start:516,end:571,action:null,click:null,scroll:'editorial',fromScale:1.01,toScale:1.11}
+];
+
+function scrollFor(step,frame){
+  const state=capture.states[step.source];
+  if(!state)return 0;
+  const max=Math.max(0,state.pageHeight-viewportHeight);
+  const p=pointFor(step.action);
+  const aim=clamp(p.y-510,0,max);
+  if(step.scroll==='top')return 0;
+  if(step.scroll==='target'){
+    const a=step.source==='v5-home-return'?step.start+21:step.start+24;
+    const b=step.source==='v5-home-return'?step.click-18:step.click-17;
+    return mix(0,aim,smooth(progress(frame,a,b)));
+  }
+  if(step.scroll==='back-to-top'){
+    const prev=pointFor('cuidados');
+    const previousScroll=clamp(prev.y-510,0,max);
+    return mix(previousScroll,0,smooth(progress(frame,step.start+19,step.click-17)));
+  }
+  if(step.scroll==='editorial')
+    return mix(0,Math.min(max,480),smooth(progress(frame,step.start+8,step.start+44)));
+  return 0;
 }
 
-/*
- * Source change is a short optical zoom-through (speed + small blur)
- * instead of the 32-frame ghosted dissolves of V3.
- * Beat timing follows the actual reference's macro motion:
- * 0-1.8 close / 1.8-3.3 pullback / 3.3-5.5 approach /
- * 5.5-8.9 close hero / 8.9-13.9 exploring UI /
- * 13.9-15.2 reveal / 15.2-16.6 branding /
- * 16.6-20.17 return to opening pose.
- */
-const scenes=[
-  {
-    id:'hero',start:0,end:269,source:'home-hero',
-    camera:[
-      [0,1.84,-60,110],[38,1.90,-125,70],
-      [57,1.30,-60,130],[75,.74,0,260],
-      [92,.66,0,165],[122,.81,-10,166],
-      [151,1.20,-55,132],[175,2.08,-215,30],
-      [207,2.30,35,-115],[234,2.42,325,-160],
-      [257,2.65,310,-608],[269,2.75,285,-792]
-    ]
-  },
-  {
-    id:'vitrine',start:259,end:330,source:'home-shop',alt:'home-filter',switchAt:294,
-    camera:[[259,2.31,-95,186],[285,2.37,-180,94],[309,2.49,60,-95],[330,2.58,190,-282]]
-  },
-  {
-    id:'categoria',start:319,end:376,source:'category',alt:'category-sort',switchAt:348,
-    camera:[[319,2.12,85,176],[346,2.27,190,5],[376,2.53,40,-248]]
-  },
-  {
-    id:'produto',start:366,end:413,source:'product',alt:'product-details',switchAt:390,
-    camera:[[366,2.09,-95,119],[392,2.34,-10,-20],[413,2.45,-256,-182]]
-  },
-  {
-    id:'personalizadas',start:403,end:431,source:'personalizadas',
-    camera:[[403,1.72,110,130],[419,1.94,45,-34],[431,1.67,-80,-116]]
-  },
-  {
-    id:'manifesto',start:421,end:444,source:'manifesto',
-    camera:[[421,1.65,-80,48],[433,1.52,15,10],[444,1.08,0,130]]
-  },
-  {
-    id:'revelacao',start:434,end:461,source:'home-hero',
-    camera:[[434,.95,30,143],[446,.71,0,162],[461,.58,0,185]]
-  },
-  {
-    id:'retorno',start:500,end:L,source:'home-hero',
-    camera:[[500,.58,0,185],[521,.84,0,167],[547,1.38,-56,120],
-      [579,1.79,-170,92],[605,1.84,-60,110]]
-  }
-];
-const motionCuts=[261,321,368,407,425,437];
+function Cursor({x,y,clickFrame,frame}){
+  const press=clickFrame!==null?Math.max(0,1-Math.abs(frame-clickFrame)/6):0;
+  const tick=frame-(clickFrame??-9999);
+  const ring=clickFrame!==null&&tick>=-2&&tick<=13;
+  const rp=progress(frame,clickFrame-2,clickFrame+13);
+  return <>
+    {ring&&<div style={{
+      position:'absolute',left:x-26,top:y-26,width:52,height:52,
+      borderRadius:'50%',border:'2px solid rgba(104,68,184,.82)',
+      background:'rgba(224,205,249,.22)',opacity:1-rp,
+      transform:'scale('+mix(.43,1.75,ease(rp))+')',pointerEvents:'none'
+    }}/>}
+    <svg viewBox="0 0 35 45" width="35" height="45" style={{
+      position:'absolute',left:x-3,top:y-3,
+      transform:'scale('+(1-press*.18)+')',
+      filter:'drop-shadow(0 2px 3px rgba(30,19,37,.28))',pointerEvents:'none'
+    }}>
+      <path d="M3 3L3 34L11.7 25.6L18.2 40L25.3 36.4L18.7 22L31.7 20.8Z"
+        fill="#fff" stroke="#3e2b5a" strokeWidth="2.1" strokeLinejoin="round"/>
+    </svg>
+  </>;
+}
 
-function SiteWindow({source,transform,opacity=1,blur=0,mask}){
+function Browser({step,frame,scroll,transform}){
+  const state=capture.states[step.source];
+  if(!state)return null;
+  const aim=pointFor(step.action);
+  const travel=smooth(progress(frame,step.start+13,(step.click??step.end)-7));
+  const targetY=step.action?aim.y-scroll:480;
+  const px=mix(1120,aim.x,travel);
+  const py=mix(378,clamp(targetY,28,862),travel);
   return <div style={{
     position:'absolute',top:'50%',left:'50%',width:1440,height:950,
-    marginLeft:-720,marginTop:-475,borderRadius:18,overflow:'hidden',
-    background:BG,border:'1px solid rgba(104,68,184,.12)',
-    boxShadow:'0 45px 100px rgba(42,30,57,.18),0 10px 28px rgba(42,30,57,.08)',
-    opacity,transform,transformOrigin:'center',
-    filter:blur>0.1?`blur(${blur.toFixed(2)}px)`:'none',
-    ...(mask?{clipPath:mask}:{}),
-    willChange:'transform,opacity,filter',backfaceVisibility:'hidden'
+    marginLeft:-720,marginTop:-475,transform,transformOrigin:'center',
+    background:PAPER,borderRadius:18,overflow:'hidden',
+    border:'1px solid rgba(104,68,184,.14)',
+    boxShadow:'0 45px 120px rgba(40,29,55,.20),0 13px 30px rgba(35,21,49,.10)',
+    willChange:'transform,opacity',backfaceVisibility:'hidden'
   }}>
-    <div style={{height:50,background:'#fdfaf7',borderBottom:'1px solid #e8e1e9',
-      display:'flex',alignItems:'center',gap:9,paddingLeft:22}}>
-      {['#d8c6e9','#e5d6c6','#c8afca'].map((c,i)=>
-        <span key={i} style={{width:10,height:10,borderRadius:10,background:c}}/>)}
-      <div style={{color:'#736c76',fontSize:14,textAlign:'center',flex:1,paddingRight:62}}>
+    <div style={{
+      position:'relative',height:50,display:'flex',alignItems:'center',
+      gap:9,paddingLeft:23,borderBottom:'1px solid #e8e1e9',background:'#fdfaf7'
+    }}>
+      {['#d8c6e9','#e5d6c6','#c8afca'].map((c,i)=><span key={i}
+        style={{width:10,height:10,borderRadius:20,background:c}}/>)}
+      <div style={{position:'absolute',left:410,right:410,textAlign:'center',
+        fontSize:14,color:'#756c79',whiteSpace:'nowrap'}}>
         lavender.mathbrands.com.br
       </div>
     </div>
-    <Img src={staticFile('captures/'+source+'.png')} style={{
-      display:'block',width:1440,height:900,objectFit:'cover'
-    }}/>
+    <div style={{width:1440,height:900,position:'relative',overflow:'hidden',background:PAPER}}>
+      <Img src={staticFile('captures/'+state.file)} style={{
+        position:'absolute',top:-scroll,left:0,display:'block',
+        width:1440,height:state.pageHeight,objectFit:'fill'
+      }}/>
+      {step.action&&<Cursor x={px} y={py} clickFrame={step.click} frame={frame}/>}
+    </div>
   </div>;
 }
 
-function Scene({scene,frame}){
-  const [scale,x,y]=spline(scene.camera,frame);
-  const transform=`perspective(2100px) translate3d(${x}px,${y}px,0px) scale(${scale})`;
-  const i=scenes.indexOf(scene);
-  const fadeIn=i===0||i===scenes.length-1?1:smooth(progress(frame,scene.start,scene.start+10));
-  const fadeOut=i===scenes.length-1?1:1-smooth(progress(frame,scene.end-10,scene.end));
-  const alpha=fadeIn*fadeOut;
-  const blur=Math.max(
-    ...motionCuts.map(c=>glow(frame,c,10)*8),
-    glow(frame,61,10)*4,glow(frame,170,10)*5,
-    glow(frame,507,10)*11
-  );
-  const switchP=scene.alt?smooth(progress(frame,scene.switchAt-9,scene.switchAt+12)):0;
-  return <AbsoluteFill style={{opacity:alpha,overflow:'hidden'}}>
-    <SiteWindow source={scene.source} transform={transform} blur={blur}/>
-    {scene.alt&&switchP>0&&
-      <SiteWindow source={scene.alt} transform={transform} blur={blur}
-        mask={`circle(${mix(0,145,switchP).toFixed(3)}% at 62% 51%)`}/>}
+function Shot({step,frame}){
+  const position=steps.indexOf(step);
+  const next=steps[position+1];
+  const alphaIn=position===0?1:smooth(progress(frame,step.start,step.start+8));
+  const alphaOut=next?1-smooth(progress(frame,next.start,next.start+8)):1;
+  const scroll=scrollFor(step,frame);
+  const aim=pointFor(step.action);
+  const p=smooth(progress(frame,step.start+15,(step.click??step.end)-7));
+  const scale=mix(step.fromScale,step.toScale,p);
+  const x=-(aim.x-720)*scale*.78*p;
+  const y=-(aim.y-scroll-450)*scale*.73*p;
+  const ambient=Math.sin((frame+position*25)/42)*2;
+  const transform='translate3d('+(x+ambient)+'px,'+y+'px,0) scale('+scale+')';
+
+  return <AbsoluteFill style={{overflow:'hidden',opacity:alphaIn*alphaOut,pointerEvents:'none'}}>
+    <Browser step={step} frame={frame} scroll={scroll} transform={transform}/>
   </AbsoluteFill>;
 }
 
-function Backdrop({frame}){
-  const p=frame/L;
-  const wideA=smooth(progress(frame,54,79))*(1-smooth(progress(frame,155,179)));
-  const wideB=smooth(progress(frame,427,442))*(1-smooth(progress(frame,455,468)));
-  const wide=Math.max(wideA,wideB);
-  return <AbsoluteFill style={{background:BG,overflow:'hidden'}}>
-    <div style={{position:'absolute',top:130,left:-320,width:1120,height:1120,borderRadius:1200,
-      background:'radial-gradient(circle,rgba(216,198,233,.49),rgba(216,198,233,0) 69%)',
-      transform:`translate3d(${p*52}px,${-p*40}px,0)`}}/>
-    <div style={{position:'absolute',bottom:-160,right:-335,width:1110,height:1110,borderRadius:1200,
-      background:'radial-gradient(circle,rgba(228,211,197,.43),rgba(228,211,197,0) 70%)',
-      transform:`translateX(${p*-48}px)`}}/>
-    <div style={{position:'absolute',top:250,left:-180,right:-180,textAlign:'center',opacity:wide*.07,
-      fontFamily:'Georgia, serif',fontSize:165,letterSpacing:10,color:INK}}>
-      LAVENDER
-    </div>
-    <div style={{position:'absolute',left:80,right:80,top:109,height:1,background:'rgba(104,68,184,.12)'}}/>
-    <div style={{position:'absolute',left:80,right:80,bottom:140,height:1,background:'rgba(104,68,184,.12)'}}/>
+function Background({frame}){
+  const t=frame/605;
+  return <AbsoluteFill style={{background:PAPER,overflow:'hidden'}}>
+    <div style={{position:'absolute',top:120,left:-440,width:1050,height:1150,
+      borderRadius:'50%',background:'radial-gradient(circle,rgba(216,198,233,.46),transparent 70%)',
+      transform:'translate3d('+(t*65)+'px,'+(-t*20)+'px,0)'}}/>
+    <div style={{position:'absolute',bottom:-250,right:-490,width:1100,height:1100,
+      borderRadius:'50%',background:'radial-gradient(circle,rgba(227,213,199,.44),transparent 70%)'}}/>
+    <div style={{position:'absolute',left:90,right:90,top:96,height:1,background:'rgba(104,68,184,.13)'}}/>
+    <div style={{position:'absolute',left:90,right:90,bottom:139,height:1,background:'rgba(104,68,184,.13)'}}/>
   </AbsoluteFill>;
 }
-
-function BrandInterlude({frame}){
-  const inP=smooth(progress(frame,453,463));
-  const outP=smooth(progress(frame,496,510));
-  const alpha=inP*(1-outP);
-  const p=smooth(progress(frame,463,487));
-  const zoomReturn=smooth(progress(frame,496,508));
-  if(alpha<=0.001)return null;
-  return <AbsoluteFill style={{background:INK,opacity:alpha,overflow:'hidden',
-    justifyContent:'center',alignItems:'center'}}>
-    <div style={{width:830,height:830,borderRadius:'50%',position:'absolute',
-      border:'1px solid rgba(230,220,245,.19)',opacity:.72,
-      transform:`scale(${mix(.62,1.06,p)+zoomReturn*.22})`}}/>
-    <div style={{textAlign:'center',opacity:smooth(progress(frame,466,476)),
-      transform:`translate3d(0,${mix(68,0,p)}px,0) scale(${mix(.91,1.08,zoomReturn)})`,
-      filter:zoomReturn>0?`blur(${zoomReturn*9}px)`:'none'}}>
-      <Img src={staticFile('lavender-logo.svg')} style={{width:640,height:310,objectFit:'contain',
-        filter:'brightness(0) invert(1)',display:'block',margin:'auto'}}/>
-      <div style={{width:85,height:1,background:'rgba(230,220,245,.55)',
-        margin:'32px auto 22px'}}/>
-      <div style={{fontFamily:'Arial,Helvetica,sans-serif',color:'#e6dcf5',
-        letterSpacing:'.06em',fontSize:18}}>
+function Closing({frame}){
+  const start=561;
+  const alpha=smooth(progress(frame,start,start+13));
+  const p=ease(progress(frame,start,595));
+  return <AbsoluteFill style={{background:PAPER,opacity:alpha,
+    justifyContent:'center',alignItems:'center',overflow:'hidden'}}>
+    <div style={{position:'absolute',width:800,height:800,borderRadius:'50%',
+      border:'1px solid rgba(104,68,184,.13)',
+      transform:'scale('+mix(.65,1.18,p)+')',opacity:1-p*.75}}/>
+    <div style={{
+      opacity:smooth(progress(frame,start+10,582)),
+      transform:'translate3d(0,'+mix(58,0,p)+'px,0) scale('+mix(.92,1,p)+')',textAlign:'center'
+    }}>
+      <Img src={staticFile('lavender-logo.svg')} style={{
+        display:'block',objectFit:'contain',width:640,height:320,margin:'auto'
+      }}/>
+      <div style={{width:80,height:1,background:'#b7a5c0',margin:'54px auto 26px'}}/>
+      <div style={{color:'#66616a',fontSize:20,letterSpacing:'.025em'}}>
         Design e desenvolvimento por Math Brands
       </div>
     </div>
   </AbsoluteFill>;
 }
-
 export const LavenderShowcase=()=>{
   const frame=useCurrentFrame();
-  return <AbsoluteFill style={{fontFamily:'Arial,Helvetica,sans-serif',background:BG}}>
-    <Backdrop frame={frame}/>
-    {scenes.filter(s=>frame>=s.start&&frame<s.end).map(s=>
-      <Scene key={s.id} scene={s} frame={frame}/>)}
-    <BrandInterlude frame={frame}/>
-    <div style={{position:'absolute',bottom:88,left:85,right:85,
-      display:'flex',justifyContent:'space-between',alignItems:'center',gap:30,
-      fontSize:13,letterSpacing:'.10em',color:'rgba(104,68,184,.59)',fontWeight:500}}>
-      <span>LAVENDER · CERÂMICAS</span>
-      <span>PRÉVIA VISUAL · IMAGENS ILUSTRATIVAS</span>
+  return <AbsoluteFill style={{width:1080,height:1920,fontFamily:'Arial, sans-serif',background:PAPER}}>
+    <Background frame={frame}/>
+    {steps.filter(s=>frame>=s.start&&frame<s.end).map(s=>
+      <Shot key={s.source} step={s} frame={frame}/>)}
+    {frame>=561&&<Closing frame={frame}/>}
+    <div style={{position:'absolute',bottom:78,left:86,right:86,
+      display:'flex',alignItems:'center',justifyContent:'space-between',gap:18,
+      fontSize:14,letterSpacing:'.10em',color:'rgba(104,68,184,.69)'}}>
+      <span>LAVENDER · CERÂMICAS</span><span>PRÉVIA · IMAGENS ILUSTRATIVAS</span>
     </div>
   </AbsoluteFill>;
 };
