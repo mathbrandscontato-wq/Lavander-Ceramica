@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import cp from 'node:child_process';
+const dir='motion/lavender-showcase/out';
+const silent=dir+'/Lavender_Ceramicas_Site_Showcase_V1_sem_audio.mp4';
+const report=JSON.parse(fs.readFileSync('motion/lavender-showcase/public/captures/capture-report.json'));
+if(report.result!=='PASS'||report.routes.length!==5||report.screenshots.length<9)throw Error('Capture QA incomplete');
+const output=cp.execFileSync('ffprobe',['-v','error','-show_entries','stream=width,height,nb_frames,r_frame_rate,codec_name','-show_entries','format=duration','-of','json',silent],{encoding:'utf8'});
+const meta=JSON.parse(output),video=meta.streams.find(x=>x.codec_name==='h264');
+const frames=Number(video?.nb_frames),sec=Number(meta.format.duration);
+if(video.width!==1080||video.height!==1920||video.r_frame_rate!=='30/1'||frames!==605||Math.abs(sec-605/30)>.05)throw Error('Video QA failed '+output);
+const qa={result:'PASS',video:{width:video.width,height:video.height,codec:video.codec_name,fps:video.r_frame_rate,frames,durationSec:sec},captures:report.screenshots.length,routes:report.routes.map(x=>x.route),interactions:report.interactions,prototype:report.prototype,referenceVideo:'Unavailable in conversation. Storyboard only; no frame-by-frame comparison claimed.',commercial:'Illustrative images retain their disclaimers in original captures. No checkout/purchase simulated.',sourceBranch:'feat/m5-preview-media-payment-pilot',isolatedMotion:true};
+fs.writeFileSync(dir+'/QA_REPORT.json',JSON.stringify(qa,null,2));console.log(JSON.stringify(qa,null,2));

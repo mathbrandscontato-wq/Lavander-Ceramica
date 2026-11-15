@@ -1,0 +1,21 @@
+{
+  "name": "lavender-ceramicas-motion-showcase",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "capture": "node scripts/capture.mjs",
+    "render": "remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_V1_sem_audio.mp4 --codec h264 --crf 17 --pixel-format yuv420p --concurrency 2",
+    "thumbnail": "remotion still src/index.jsx LavenderShowcase out/preview-frame.png --frame 345",
+    "render:preview": "remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_preview.mp4 --codec h264 --scale 0.5 --crf 26 --pixel-format yuv420p --concurrency 3",
+    "audio": "node scripts/original-audio.mjs",
+    "qa": "node scripts/qa.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "remotion": "^4.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "playwright": "^1.55.0"
+  }
+}

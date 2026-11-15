@@ -1,0 +1,84 @@
+name: Lavender — Site Showcase V2 (snapshot aprovado)
+on:
+  push:
+    branches: ["feat/lavender-site-showcase-motion-v2-approved"]
+    paths:
+      - 'motion/lavender-showcase/**'
+      - '.github/workflows/motion-lavender.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependências Astro em modo isolado
+        run: npm ci --no-audit --no-fund
+      - name: Build das páginas reais
+        run: npm run build
+      - name: Abrir snapshot visual aprovado de gh-pages (sem deploy)
+        run: |
+          git fetch origin gh-pages --depth=1
+          git worktree add --detach /tmp/lavender-gh-pages FETCH_HEAD
+          ACTUAL=$(git -C /tmp/lavender-gh-pages rev-parse HEAD)
+          EXPECTED="8fd5af3ef68210d10369c6d1a42a7911992815ea"
+          test "$ACTUAL" = "$EXPECTED" || { echo "Approved visual snapshot SHA mismatch: $ACTUAL"; exit 1; }
+          python3 -m http.server 4532 --bind 127.0.0.1 --directory /tmp/lavender-gh-pages > /tmp/lavender-approved-server.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:4532/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/lavender-approved-server.log
+          exit 1
+      - name: Instalar dependências Remotion e Playwright
+        run: npm install --prefix motion/lavender-showcase --no-audit --no-fund
+      - name: Instalar Chromium via Playwright
+        run: |
+          cd motion/lavender-showcase
+          npx playwright install --with-deps chromium
+      - name: Capturar o site visual realmente aprovado e interações demonstrativas
+        run: |
+          mkdir -p motion/lavender-showcase/public
+          cp /tmp/lavender-gh-pages/assets/lavender-logo.svg motion/lavender-showcase/public/lavender-logo.svg
+          node motion/lavender-showcase/scripts/capture-approved.mjs
+      - name: Renderizar 605 frames 1080x1920
+        run: |
+          cd motion/lavender-showcase
+          mkdir -p out
+          npx remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_V2_sem_audio.mp4 \
+            --codec h264 --crf 17 --pixel-format yuv420p --concurrency 2
+      - name: Instalar FFmpeg para mux e QA
+        run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - name: Sintetizar trilha original e criar versão com áudio
+        run: |
+          node motion/lavender-showcase/scripts/original-audio.mjs
+          ffmpeg -y -loglevel error \
+            -i motion/lavender-showcase/out/Lavender_Ceramicas_Site_Showcase_V2_sem_audio.mp4 \
+            -i motion/lavender-showcase/out/original-score.wav \
+            -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -b:a 192k -shortest -movflags +faststart \
+            motion/lavender-showcase/out/Lavender_Ceramicas_Site_Showcase_V2.mp4
+      - name: Renderizar prévia compacta
+        run: |
+          cd motion/lavender-showcase
+          npx remotion render src/index.jsx LavenderShowcase out/Lavender_Ceramicas_Site_Showcase_V2_preview.mp4 \
+            --codec h264 --scale 0.5 --crf 28 --pixel-format yuv420p --concurrency 2
+          npx remotion still src/index.jsx LavenderShowcase out/preview-frame.png --frame 345
+      - name: QA de vídeo e navegação
+        run: node motion/lavender-showcase/scripts/qa-approved.mjs
+      - name: Publicar artefatos para revisão (sem deploy comercial)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lavender-site-showcase-v2-approved-artifacts
+          path: |
+            motion/lavender-showcase/out/*.mp4
+            motion/lavender-showcase/out/*.png
+            motion/lavender-showcase/out/*REPORT*.json
+            motion/lavender-showcase/public/captures/capture-report.json
+          if-no-files-found: warn
+          retention-days: 14

@@ -1,0 +1,21 @@
+import fs from 'node:fs';
+import cp from 'node:child_process';
+const root='motion/lavender-showcase';
+const dir=root+'/out';
+const report=JSON.parse(fs.readFileSync(root+'/public/captures/capture-report.json','utf8'));
+const approved='gh-pages@8fd5af3ef68210d10369c6d1a42a7911992815ea';
+if(report.result!=='PASS'||report.routes.length!==5||report.screenshots.length<9||
+ report.visualSource!==approved)throw Error('Approved capture integrity QA failed');
+const expected=['/','/categoria/canecas','/produto/caneca-estante','/colecoes/personalizadas','/manifesto'];
+if(expected.some(x=>!report.routes.some(y=>y.route===x)))throw Error('Approved route missing');
+if(!report.fonts.some(x=>x.includes('Cormorant Garamond'))||!report.fonts.some(x=>x.includes('Inter')))throw Error('Brand fonts not verified');
+const file=dir+'/Lavender_Ceramicas_Site_Showcase_V2_sem_audio.mp4';
+const probe=JSON.parse(cp.execFileSync('ffprobe',['-v','error','-show_entries','stream=width,height,nb_frames,r_frame_rate,codec_name','-show_entries','format=duration','-of','json',file],{encoding:'utf8'}));
+const video=probe.streams.find(s=>s.codec_name==='h264');
+const frames=Number(video?.nb_frames), sec=Number(probe.format.duration);
+if(video.width!==1080||video.height!==1920||video.r_frame_rate!=='30/1'||frames!==605||Math.abs(sec-605/30)>.06)throw Error('Remotion output QA failed');
+const withAudio=dir+'/Lavender_Ceramicas_Site_Showcase_V2.mp4';
+const mux=JSON.parse(cp.execFileSync('ffprobe',['-v','error','-show_entries','stream=codec_name','-of','json',withAudio],{encoding:'utf8'}));
+if(!mux.streams.some(s=>s.codec_name==='aac'))throw Error('Audio track missing');
+const qa={status:'PASS',version:'V2-approved-source',visualSource:approved,video:{width:video.width,height:video.height,fps:video.r_frame_rate,frames,durationSec:sec,format:'H.264 MP4'},audio:'AAC original synthesized score',capturedRoutes:report.routes,interactions:report.interactions,brandFonts:report.fonts,logo:'original approved SVG (gh-pages/assets/lavender-logo.svg)',commercial:'Demo source only, with existing notices. No real SKU or checkout simulated.',referenceRecording:'Not available, so cannot assess motion correspondence frame by frame.',visualComparability:'Source is the exact approved screenshot/code snapshot (sha asserted in CI).',astro:'Technical M5 build checked separately, not used as visual capture source.'};
+fs.writeFileSync(dir+'/QA_REPORT_V2.json',JSON.stringify(qa,null,2));console.log(JSON.stringify(qa,null,2));
