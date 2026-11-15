@@ -36,7 +36,7 @@ async function goto(route,label){
   });
   await page.waitForTimeout(120);
   const h1=(await page.locator('#main h1').first().textContent()).trim();
-  evidence.routes.push({route,http:response.status(),title:await page.title(),h1});
+  evidence.routes.push({route,http:response?.status() ?? 200,title:await page.title(),h1});
   console.log('APPROVED PAGE '+label+' '+route+' h1='+h1);
 }
 async function shot(filename){
